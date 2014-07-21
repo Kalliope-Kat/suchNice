@@ -15,40 +15,45 @@ var walk, blocks, blockArray, spriteX, spriteY;
 
 var walkingDirection;
 
-var gameOver;
+var gameOver, timeLimit = 30;
 
 var jamieMode;
 
+var startXposition, startYposition, endXposition, endYposition;
+
 blockArray = [];
 
+
+
 function openCanvas() {
-	
-	var canvas = document.getElementById('game');
-	canvas.width = CANVAS_WIDTH;
-	canvas.height = CANVAS_HEIGHT;
-	context = canvas.getContext("2d");
-	stage = new createjs.Stage(canvas);
+    
+    canvas = document.getElementById('game');
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
+    context = canvas.getContext("2d");
+    stage = new createjs.Stage(canvas);
+
 }
 
 function drawTitleScreen() {
-	titleScreen.x = 0;
-	titleScreen.y = 0;
+    titleScreen.x = 0;
+    titleScreen.y = 0;
 
-	var text = new createjs.Text("Title screen", "50px Arial", "#253742"); 
-	text.x = 270; 
-	text.y = 100;
-	text.textBaseline = "alphabetic";
+    var text = new createjs.Text("Title screen", "50px Arial", "#253742"); 
+    text.x = 270; 
+    text.y = 100;
+    text.textBaseline = "alphabetic";
 
-	startButton.x = 500;
-	startButton.y = 500;
+    startButton.x = 500;
+    startButton.y = 500;
     instructionsButton.x = 600;
     instructionsButton.y = 500;
 
-	stage.addChild(titleScreen);
-	stage.addChild(text);
-	stage.addChild(startButton);
+    stage.addChild(titleScreen);
+    stage.addChild(text);
+    stage.addChild(startButton);
     stage.addChild(instructionsButton);
-	
+    
 }
 
 function displaySprites() {
@@ -56,23 +61,23 @@ function displaySprites() {
     walk.y=spriteY;
     walk.gotoAndPlay(walkingDirection);
     stage.addChild(walk);
-	
-	for(i = 0; i < 5; i++){
-		blocks.x=i*31+20;
-		blocks.y=215;
-		blocks.gotoAndStop(i);
-		blockArray.push(blocks.clone());
-	}
-	for(j = 0; j < 5; j++){
-		stage.addChild(blockArray[j]);	
-	}
-	
+    
+    for(i = 0; i < 5; i++){
+        blocks.x=i*31+20;
+        blocks.y=215;
+        blocks.gotoAndStop(i);
+        blockArray.push(blocks.clone());
+    }
+    for(j = 0; j < 5; j++){
+        stage.addChild(blockArray[j]);  
+    }
+    
 }
 
 function drawInstructionsScreen() {
     stage.removeAllChildren();
-	instructionsScreen.x = 0;
-	instructionsScreen.y = 0;
+    instructionsScreen.x = 0;
+    instructionsScreen.y = 0;
 
     var text = new createjs.Text("Instructions", "50px Arial", "#EFC94C"); 
     text.x = 270; 
@@ -82,44 +87,44 @@ function drawInstructionsScreen() {
     startButton.y = 500;
 
 
-	stage.addChild(instructionsScreen);
+    stage.addChild(instructionsScreen);
     stage.addChild(text);
     stage.addChild(startButton);
 }
 
 function drawGameScreen() {
     stage.removeAllChildren();
-	gameScreen.x = 0;
-	gameScreen.y = 0;
+    gameScreen.x = 0;
+    gameScreen.y = 0;
 
 
-	stage.addChild(gameScreen);
+    stage.addChild(gameScreen);
 
-	displaySprites();
+    displaySprites();
 }
 
 function drawGameOverScreen() {
     stage.removeAllChildren();
-	gameOverScreen.x = 0;
-	gameOverScreen.y = 0;
+    gameOverScreen.x = 0;
+    gameOverScreen.y = 0;
 
-	var text = new createjs.Text("Game Over", "50px Arial", "#253742"); 
-	text.x = 270; 
-	text.y = 100;
-	text.textBaseline = "alphabetic";
+    var text = new createjs.Text("Game Over", "50px Arial", "#253742"); 
+    text.x = 270; 
+    text.y = 100;
+    text.textBaseline = "alphabetic";
 
-	var finalScoreText = new createjs.Text("Final Score: "+ score, "30px Arial", "#253742"); 
-	finalScoreText.x = 300; 
-	finalScoreText.y = 200;
-	finalScoreText.textBaseline = "alphabetic";
+    var finalScoreText = new createjs.Text("Final Score: "+ score, "30px Arial", "#253742"); 
+    finalScoreText.x = 300; 
+    finalScoreText.y = 200;
+    finalScoreText.textBaseline = "alphabetic";
 
     restartButton.x = 500;
     restartButton.y = 500;
 
 
-	stage.addChild(gameOverScreen);
-	stage.addChild(text);
-	stage.addChild(finalScoreText);
+    stage.addChild(gameOverScreen);
+    stage.addChild(text);
+    stage.addChild(finalScoreText);
     stage.addChild(restartButton);
 }
 
@@ -140,9 +145,9 @@ function loadFiles() {
     queue.loadManifest(fileManifest);
 }
 function handleButtonClick() {
-    startButton.addEventListener("click", function (event){
-    		gameState = CREATE_GAME;
-    	});
+    startButton.addEventListener("click", function (event){ 
+        gameState = CREATE_GAME;
+    });
 
     instructionsButton.addEventListener("click", function (event){
             gameState = INSTRUCTIONS;
@@ -156,22 +161,22 @@ function handleButtonClick() {
 }
 
 function loadComplete(evt) {
-	titleScreen = new createjs.Bitmap(queue.getResult("titleScreen"));
-	instructionsScreen = new createjs.Bitmap(queue.getResult("instructionsScreen"));
-	startButton = new createjs.Bitmap(queue.getResult("startButton"));
+    titleScreen = new createjs.Bitmap(queue.getResult("titleScreen"));
+    instructionsScreen = new createjs.Bitmap(queue.getResult("instructionsScreen"));
+    startButton = new createjs.Bitmap(queue.getResult("startButton"));
     instructionsButton = new createjs.Bitmap(queue.getResult("instructionsButton"));
     restartButton = new createjs.Bitmap(queue.getResult("restartButton"));
-	gameScreen = new createjs.Bitmap(queue.getResult("gameScreen"));
-	gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
+    gameScreen = new createjs.Bitmap(queue.getResult("gameScreen"));
+    gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
 
-	var blockSheet = new createjs.SpriteSheet({
+    var blockSheet = new createjs.SpriteSheet({
         images: [queue.getResult("mySprites")],
         frames: [[0,0,32,32,0,16,16],[32,0,32,32,0,16,16],[64,0,32,32,0,16,16],[96,0,32,32,0,16,16],[128,0,32,32,0,16,16]]
         });
 
-	blocks = new createjs.Sprite(blockSheet);
+    blocks = new createjs.Sprite(blockSheet);
 
-	var walkSheet = new createjs.SpriteSheet({
+    var walkSheet = new createjs.SpriteSheet({
         images: [queue.getResult("mySprites")],
         frames: [[160,0,19,49,0,10.05,48.6],[179,0,34,44,0,17.05,43.6],[213,0,22,46,0,9.05,45.6],[235,0,17,49,0,8.05,48.6],[0,49,25,49,0,10.05,48.6],[25,49,31,46,0,14.05,45.6],[56,49,33,44,0,16.05,43.6],[89,49,30,44,0,17.05,43.6],[119,49,28,46,0,17.05,45.6],[147,49,19,49,0,10.05,48.6],[166,49,23,49,0,14.05,48.6],[189,49,31,46,0,16.05,45.6],[220,49,34,44,0,17.05,43.6],[0,98,19,49,0,9.05,48.6],[19,98,34,44,0,17.05,43.6],[53,98,22,46,0,13.05,45.6],[75,98,17,49,0,9.05,48.6],[92,98,25,49,0,15.05,48.6],[117,98,31,46,0,17.05,45.6],[148,98,33,44,0,17.05,43.6],[181,98,30,44,0,13.05,43.6],[211,98,28,46,0,11.05,45.6],[0,147,19,49,0,9.05,48.6],[19,147,23,49,0,9.05,48.6],[42,147,31,46,0,15.05,45.6],[73,147,34,44,0,17.05,43.6]],
         animations: {
@@ -184,16 +189,31 @@ function loadComplete(evt) {
     
     walk = new createjs.Sprite(walkSheet);
 
-	handleButtonClick();
-	initMouseCords();
-	spriteX = 400;
+    handleButtonClick();
+    initMouseCords();
+    spriteX = 400;
     spriteY = 600;
-	mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
-	scoreText = new createjs.Text("Score: "+ score, "15px Arial", "#253742"); 
+    mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
+    scoreText = new createjs.Text("Score: "+ score, "15px Arial", "#253742"); 
     drawScore();
-	startLoop();
+    startLoop();
 }
 
+function handleMouseDown(event) {
+    if(gameState === IN_GAME){
+        startXposition = mouseX;
+        startYposition = mouseY;
+    }
+}
+
+function handleMouseRelease(event) {
+    if(gameState === IN_GAME){
+        endXposition = mouseX;
+        endYposition = mouseY;
+        console.log("Start X & Y: " + startXposition + ", " + startYposition);
+        console.log("End X & Y: " + endXposition + ", " + endYposition);
+    }
+}
 
 function init() {
     resetGameTimer();
@@ -207,7 +227,9 @@ function init() {
 
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
-	 
+    stage.on("mousedown", handleMouseDown);
+    stage.on("pressup", handleMouseRelease);
+     
 }
 
 function handleKeyDown(event) {
@@ -262,34 +284,36 @@ function handleKeyUp(event) {
     }
     displaySprites();
 }
+
+
 }
 
 function initMouseCords() {
-	stage.on("stagemousemove", function(evt) {
+    stage.on("stagemousemove", function(evt) {
 
-	    mouseX = evt.stageX;
-	    mouseY = evt.stageY;
+        mouseX = evt.stageX;
+        mouseY = evt.stageY;
 
-	});	
+    }); 
 }
 
 function drawMouseCords() {
-	mousePositionText.x = 20;
-	mousePositionText.y = 15;
-	stage.addChild(mousePositionText);
+    mousePositionText.x = 20;
+    mousePositionText.y = 15;
+    stage.addChild(mousePositionText);
 }
 
 
 function drawScore() {
-	
-	scoreText.x = 700; 
-	scoreText.y = 15;
+    
+    scoreText.x = 700; 
+    scoreText.y = 15;
 
-	stage.addChild(scoreText);
+    stage.addChild(scoreText);
 }
 
 function drawLevelSign() {
-	var gameLevel = new createjs.Shape();
+    var gameLevel = new createjs.Shape();
             gameLevel.graphics.setStrokeStyle(4, 'square', 'square');
             gameLevel.graphics.beginStroke(('#333'));
             gameLevel.graphics.beginFill("#EFC94C").drawRect(0,0,200, 200);
@@ -300,17 +324,17 @@ function drawLevelSign() {
             
 
     var level = new createjs.Text("Level", "30px Arial", "#253742");
-    	level.x = 65;
-    	level.y = 50;
+        level.x = 65;
+        level.y = 50;
 
     var levelNumber = new createjs.Text(gameLevelNumber, "35px Arial", "#253742");
-    	levelNumber.x = 90;
-    	levelNumber.y = 100;	
+        levelNumber.x = 90;
+        levelNumber.y = 100;    
 
     var levelContainer = new createjs.Container();
-    		levelContainer.x = 300;
-    		levelContainer.y = 800;
-    		levelContainer.addChild(gameLevel, level, levelNumber);
+            levelContainer.x = 300;
+            levelContainer.y = 800;
+            levelContainer.addChild(gameLevel, level, levelNumber);
 
             var tween = createjs.Tween.get(levelContainer, {loop:false})
                          .to({x:300, y:200}, 1500, createjs.Ease.bounceOut)
@@ -324,8 +348,8 @@ function drawLevelSign() {
 
 
 function resetGameTimer() {
-	timerCount = 0;
-	gameTimer = 0;
+    timerCount = 0;
+    gameTimer = 0;
 }
 
 function resetGame() {
@@ -335,32 +359,33 @@ function resetGame() {
 }
 
 function runGameTimer() {
-	timerCount += 1;
-	if (timerCount%(FPS/10) ===0 ) {
-		gameTimer = timerCount/(FPS);
-	}
+    timerCount += 1;
+    if (timerCount%(FPS/10) ===0 ) {
+        gameTimer = timerCount/(FPS);
+    }
 }
 
 function startGame() {
-	score = 0;
+    score = 0;
 }
 
 function startLoop() {
-	createjs.Ticker.addEventListener("tick", loop);
+    createjs.Ticker.addEventListener("tick", loop);
     createjs.Ticker.setFPS(FPS);
 }
 
 function main() {
-	init();
-	gameState = TITLE;
-	gameOver = false;
+    init();
+    gameState = TITLE;
+    gameOver = false;
+    
 }
 function loop() {
-	runGameTimer();
-	mousePositionText.text = "Mouse X: " +mouseX + "  Mouse Y:" + mouseY;
-	scoreText.text = "Score: " + score; 
+    runGameTimer();
+    mousePositionText.text = "Mouse X: " +mouseX + "  Mouse Y:" + mouseY;
+    scoreText.text = "Score: " + score; 
     console.log("JamieMode: "+jamieMode);
-	switch(gameState) {
+    switch(gameState) {
      //case CONSTRUCT:
        //construct();
        //gameState = HOLD;
@@ -387,7 +412,7 @@ function loop() {
 
          drawMouseCords();
          drawScore();
-         if(gameTimer > 10) { gameState = GAME_OVER; gameOver = true; }
+         if(gameTimer > timeLimit) { gameState = GAME_OVER; gameOver = true; }
          break;
        case GAME_OVER:
          drawGameOverScreen();
@@ -398,8 +423,8 @@ function loop() {
 stage.update();
 }
 if( !!(window.addEventListener)) {
-	window.addEventListener ("DOMContentLoaded", main);
+    window.addEventListener ("DOMContentLoaded", main);
 
 }else{//MSIE
-	window.attachEvent("onload", main);
+    window.attachEvent("onload", main);
 }
