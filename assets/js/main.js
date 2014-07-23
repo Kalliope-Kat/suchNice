@@ -419,6 +419,12 @@ function runGameTimer() {
     }
 }
 
+function resetThrowItem() {
+    itemX = 100;
+    itemY = 500;
+    drawBall();
+}
+
 function startGame() {
     score = 0;
 }
