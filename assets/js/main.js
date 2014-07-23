@@ -8,7 +8,7 @@ var startButton, instructionsButton, restartButton;
 var titleScreen, instructionsScreen, button;
 var gameTimer, gameLevelNumber;
 var gameOver, score, scoreText;
-var TITLE = 0, INSTRUCTIONS = 1, CREATE_GAME = 2, IN_GAME = 3, GAME_OVER = 4;
+var TITLE = 0, INSTRUCTIONS = 1, CREATE_GAME = 2, IN_GAME = 3, GAME_OVER = 4, PAUSED = 5;
 var mouseX, mouseY, mousePositionText;
 
 var walk, blocks, blockArray, spriteX, spriteY;
@@ -17,7 +17,9 @@ var walkingDirection;
 
 var gameOver, timeLimit = 30;
 
-var jamieMode;
+var jamieMode, paused;
+
+var score;//High score persistance if time available 
 
 var startXposition, startYposition, endXposition, endYposition;
 
@@ -281,6 +283,17 @@ function handleKeyUp(event) {
                 jamieMode = true;
             }
             break;
+        case 80:
+            console.log("Pause Pressed");
+            if(paused){
+                paused = false;
+                gameState = IN_GAME;
+            }
+            else{                
+                paused = true;
+                gameState = PAUSED;
+            }
+            break;
     }
     displaySprites();
 }
@@ -414,11 +427,14 @@ function loop() {
          drawScore();
          if(gameTimer > timeLimit) { gameState = GAME_OVER; gameOver = true; }
          break;
+                
        case GAME_OVER:
          drawGameOverScreen();
          //hideGame();
          break;
-       default:
+      
+       case PAUSED:
+            break;
    }
 stage.update();
 }
