@@ -1,6 +1,13 @@
 var CANVAS_WIDTH = 800;
 var CANVAS_HEIGHT = 600;
 var FPS = 30;
+var RADTODEG = 180/Math.PI;
+var DEGTORAD = Math.PI/180;
+var vel = 8;
+var angle = 360;
+var throwAngle, mouseDragDistance;
+var itemX, itemY;
+var gravityY;
 
 var canvas, stage, queue, context;
 var gameState;
@@ -8,7 +15,8 @@ var startButton, instructionsButton, restartButton;
 var titleScreen, instructionsScreen, button;
 var gameTimer, gameLevelNumber;
 var gameOver, score, scoreText;
-var TITLE = 0, INSTRUCTIONS = 1, CREATE_GAME = 2, IN_GAME = 3, GAME_OVER = 4, PAUSED = 5;
+var TITLE = 0, INSTRUCTIONS = 1, CREATE_GAME = 2, IN_GAME = 3, GAME_OVER = 4, PAUSED = 5, THROWING_ITEM= 6;
+
 var mouseX, mouseY, mousePositionText;
 
 var walk, blocks, blockArray, spriteX, spriteY;
@@ -22,7 +30,7 @@ var jamieMode, paused;
 var score;//High score persistance if time available 
 
 var startXposition, startYposition, endXposition, endYposition;
-
+var ball;
 blockArray = [];
 
 
@@ -146,6 +154,7 @@ function loadFiles() {
     queue.on("complete", loadComplete, this);
     queue.loadManifest(fileManifest);
 }
+
 function handleButtonClick() {
     startButton.addEventListener("click", function (event){ 
         gameState = CREATE_GAME;
@@ -199,6 +208,8 @@ function loadComplete(evt) {
     scoreText = new createjs.Text("Score: "+ score, "15px Arial", "#253742"); 
     drawScore();
     startLoop();
+    itemX = 100;
+    itemY = 500;
 }
 
 function handleMouseDown(event) {
@@ -214,6 +225,21 @@ function handleMouseRelease(event) {
         endYposition = mouseY;
         console.log("Start X & Y: " + startXposition + ", " + startYposition);
         console.log("End X & Y: " + endXposition + ", " + endYposition);
+        var dy = (endYposition - startYposition);
+        var dx = (endXposition - startXposition);
+        var theta = Math.atan2(dy, dx);
+        theta *= RADTODEG;
+        theta += 180;
+        throwAngle = theta;
+        console.log("Angle: "+ theta);
+
+        dy *= dy;
+        dx *= dx;
+        mouseDragDistance = Math.sqrt(dx + dy);
+        console.log("Distance: "+mouseDragDistance);
+        gravityY = 0;
+        updateItemMovement();
+        gameState = THROWING_ITEM;
     }
 }
 
@@ -226,6 +252,7 @@ function init() {
     gameOver = false;
     jamieMode = false;
     walkingDirection = "walkRight";
+    
 
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
@@ -316,9 +343,7 @@ function drawMouseCords() {
     stage.addChild(mousePositionText);
 }
 
-
 function drawScore() {
-    
     scoreText.x = 700; 
     scoreText.y = 15;
 
@@ -358,6 +383,22 @@ function drawLevelSign() {
             stage.addChild(levelContainer);
 }
 
+function drawBall() {
+        ball = new createjs.Shape();
+        ball.graphics.setStrokeStyle(1);
+        ball.graphics.beginStroke('#00F');
+        ball.graphics.beginFill("#00F").drawCircle(0,0,10);
+        ball.x = itemX;
+        ball.y = itemY;
+
+        stage.addChild(ball);
+}
+
+function moveBall() {
+    updateItemMovement();
+    ball.x = itemX;
+    ball.y = itemY;
+}
 
 
 function resetGameTimer() {
@@ -387,6 +428,28 @@ function startLoop() {
     createjs.Ticker.setFPS(FPS);
 }
 
+function updateItemMovement() {
+
+    var previousXLocation = itemX;
+    var previousYLocation = itemY;
+    var radians = throwAngle * DEGTORAD;
+    var itemXmod = ((mouseDragDistance*.1)*Math.cos(radians));
+    var itemYmod = ((mouseDragDistance*.1)*Math.sin(radians));
+
+    itemX += itemXmod;
+    itemY += itemYmod;
+    if(throwAngle < 360){
+        //throwAngle++;
+    }
+    //mouseDragDistance = 25;
+    
+    itemY += gravityY;
+    gravityY += 0.5;
+
+
+}
+
+
 function main() {
     init();
     gameState = TITLE;
@@ -396,8 +459,8 @@ function main() {
 function loop() {
     runGameTimer();
     mousePositionText.text = "Mouse X: " +mouseX + "  Mouse Y:" + mouseY;
-    scoreText.text = "Score: " + score; 
-    console.log("JamieMode: "+jamieMode);
+     scoreText.text = "Score: " + score;
+    console.log("gameState: "+gameState);
     switch(gameState) {
      //case CONSTRUCT:
        //construct();
@@ -413,7 +476,7 @@ function loop() {
          drawGameScreen();
          
          drawLevelSign();
-
+         drawBall();
          //startGame();
          //showGame();
          //hideTitle();
@@ -425,9 +488,14 @@ function loop() {
 
          drawMouseCords();
          drawScore();
+         //moveBall();
          if(gameTimer > timeLimit) { gameState = GAME_OVER; gameOver = true; }
          break;
-                
+       case THROWING_ITEM:
+         //drawBall();
+         moveBall();
+         break;
+
        case GAME_OVER:
          drawGameOverScreen();
          //hideGame();
