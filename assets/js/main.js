@@ -12,7 +12,7 @@ var gravityY;
 var canvas, stage, queue, context;
 var gameState;
 var startButton, instructionsButton, restartButton;
-var titleScreen, instructionsScreen, button;
+var titleScreen, instructionsScreen, button, backDrop1, grumpyCat;
 var gameTimer, gameLevelNumber;
 var gameOver, score, scoreText;
 var TITLE = 0, INSTRUCTIONS = 1, CREATE_GAME = 2, IN_GAME = 3, GAME_OVER = 4, PAUSED = 5, THROWING_ITEM= 6;
@@ -23,7 +23,7 @@ var walk, blocks, blockArray, spriteX, spriteY;
 
 var walkingDirection;
 
-var gameOver, timeLimit = 30;
+var gameOver, timeLimit = 120;
 
 var jamieMode, paused;
 
@@ -49,7 +49,7 @@ function drawTitleScreen() {
     titleScreen.x = 0;
     titleScreen.y = 0;
 
-    var text = new createjs.Text("Title screen", "50px Arial", "#253742"); 
+    var text = new createjs.Text("Such Nice!", "50px Arial", "#253742"); 
     text.x = 270; 
     text.y = 100;
     text.textBaseline = "alphabetic";
@@ -72,16 +72,36 @@ function displaySprites() {
     walk.gotoAndPlay(walkingDirection);
     stage.addChild(walk);
     
-    for(i = 0; i < 5; i++){
-        blocks.x=i*31+20;
-        blocks.y=215;
-        blocks.gotoAndStop(i);
-        blockArray.push(blocks.clone());
-    }
-    for(j = 0; j < 5; j++){
-        stage.addChild(blockArray[j]);  
-    }
+    // for(i = 0; i < 5; i++){
+    //     blocks.x=i*31+20;
+    //     blocks.y=215;
+    //     blocks.gotoAndStop(i);
+    //     blockArray.push(blocks.clone());
+    // }
+    // for(j = 0; j < 5; j++){
+    //     stage.addChild(blockArray[j]);  
+    // }
     
+}
+
+function drawNewSprite() {
+    var walkSheet = new createjs.SpriteSheet({
+        images: [queue.getResult("mySprites")],
+        frames: [[160,0,19,49,0,10.05,48.6],[179,0,34,44,0,17.05,43.6],[213,0,22,46,0,9.05,45.6],[235,0,17,49,0,8.05,48.6],[0,49,25,49,0,10.05,48.6],[25,49,31,46,0,14.05,45.6],[56,49,33,44,0,16.05,43.6],[89,49,30,44,0,17.05,43.6],[119,49,28,46,0,17.05,45.6],[147,49,19,49,0,10.05,48.6],[166,49,23,49,0,14.05,48.6],[189,49,31,46,0,16.05,45.6],[220,49,34,44,0,17.05,43.6],[0,98,19,49,0,9.05,48.6],[19,98,34,44,0,17.05,43.6],[53,98,22,46,0,13.05,45.6],[75,98,17,49,0,9.05,48.6],[92,98,25,49,0,15.05,48.6],[117,98,31,46,0,17.05,45.6],[148,98,33,44,0,17.05,43.6],[181,98,30,44,0,13.05,43.6],[211,98,28,46,0,11.05,45.6],[0,147,19,49,0,9.05,48.6],[19,147,23,49,0,9.05,48.6],[42,147,31,46,0,15.05,45.6],[73,147,34,44,0,17.05,43.6]],
+        animations: {
+            standRight: [0, 0, "standRight"],
+            walkRight: [1, 12, "walkRight", 0.5],
+            standLeft: [13, 13, "standLeft"],
+            walkLeft: [14, 25, "walkLeft", 0.5]
+            }     
+        });
+    
+    walk = new createjs.Sprite(walkSheet);
+
+    walk.x=spriteX;
+    walk.y=spriteY;
+    walk.gotoAndPlay(walkingDirection);
+    stage.addChild(walk);
 }
 
 function drawInstructionsScreen() {
@@ -108,8 +128,11 @@ function drawGameScreen() {
     gameScreen.y = 0;
 
 
-    stage.addChild(gameScreen);
+    stage.addChild(backDrop1);
 
+    grumpyCat.x = 520;
+    grumpyCat.y = 350;
+    stage.addChild(grumpyCat);
     displaySprites();
 }
 
@@ -146,7 +169,10 @@ fileManifest = [
                 {src:"restartButton.jpg", id:"restartButton"},
                 {src:"gameScreen.jpg", id:"gameScreen"},
                 {src:"gameOverScreen.jpg", id:'gameOverScreen'},
-                {src:"sprites.png", id:"mySprites"}
+                {src:"sprites.png", id:"mySprites"},
+                {src:"gameBackdrop_1.jpg", id:"backDrop1"},
+                {src:"grumpyCat.png", id:"grumpyCat"}
+    
             ];
 
 function loadFiles() {
@@ -179,6 +205,8 @@ function loadComplete(evt) {
     restartButton = new createjs.Bitmap(queue.getResult("restartButton"));
     gameScreen = new createjs.Bitmap(queue.getResult("gameScreen"));
     gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
+    backDrop1 = new createjs.Bitmap(queue.getResult("backDrop1"));
+    grumpyCat = new createjs.Bitmap(queue.getResult("grumpyCat"));
 
     var blockSheet = new createjs.SpriteSheet({
         images: [queue.getResult("mySprites")],
@@ -202,10 +230,10 @@ function loadComplete(evt) {
 
     handleButtonClick();
     initMouseCords();
-    spriteX = 400;
-    spriteY = 600;
+    spriteX = 50;
+    spriteY = 500;
     mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
-    scoreText = new createjs.Text("Score: "+ score, "15px Arial", "#253742"); 
+    scoreText = new createjs.Text("Score: "+ score, "19px Arial", "#253742"); 
     drawScore();
     startLoop();
     itemX = 100;
@@ -239,7 +267,9 @@ function handleMouseRelease(event) {
         console.log("Distance: "+mouseDragDistance);
         gravityY = 0;
         updateItemMovement();
+        updateItemTossedMovement();
         gameState = THROWING_ITEM;
+        
     }
 }
 
@@ -400,6 +430,51 @@ function moveBall() {
     ball.y = itemY;
 }
 
+function updateTossedItem() {
+    updateItemTossedMovement();
+    walk.x=spriteX;
+    walk.y=spriteY;
+}
+
+function updateItemTossedMovement() {
+
+    var previousXLocation = spriteX;
+    var previousYLocation = spriteY;
+    var radians = throwAngle * DEGTORAD;
+    var spriteXmod = ((mouseDragDistance*0.1)*Math.cos(radians));
+    var spriteYmod = ((mouseDragDistance*0.1)*Math.sin(radians));
+
+    spriteX += spriteXmod;
+    spriteY += spriteYmod;
+        
+    spriteY += gravityY;
+    gravityY += 0.7;
+
+}
+
+function checkForCollision() {
+    var collision = ndgmr.checkPixelCollision(grumpyCat,walk);
+         if( collision ){
+            spriteX = 50;
+            spriteY = 500;
+            drawNewSprite();
+            gameState = IN_GAME;
+            score++;
+         }
+         if ( walk.y + 10 >= canvas.height ) {
+            spriteX = 50;
+            spriteY = 500;
+            drawNewSprite();
+            gameState = IN_GAME;
+         }
+         if ( walk.x + 20 >= canvas.width || walk.x - 20 < 0){
+            spriteX = 50;
+            spriteY = 500;
+            drawNewSprite();
+            gameState = IN_GAME;
+           } 
+}
+
 
 function resetGameTimer() {
     timerCount = 0;
@@ -464,9 +539,7 @@ function main() {
 }
 function loop() {
     runGameTimer();
-    mousePositionText.text = "Mouse X: " +mouseX + "  Mouse Y:" + mouseY;
      scoreText.text = "Score: " + score;
-    console.log("gameState: "+gameState);
     switch(gameState) {
      //case CONSTRUCT:
        //construct();
@@ -482,7 +555,7 @@ function loop() {
          drawGameScreen();
          
          drawLevelSign();
-         drawBall();
+         //drawBall();
          //startGame();
          //showGame();
          //hideTitle();
@@ -492,14 +565,16 @@ function loop() {
        case IN_GAME:
          //gameLoop();
 
-         drawMouseCords();
          drawScore();
          //moveBall();
          if(gameTimer > timeLimit) { gameState = GAME_OVER; gameOver = true; }
          break;
        case THROWING_ITEM:
          //drawBall();
-         moveBall();
+         //moveBall();
+         updateTossedItem();
+         checkForCollision();
+         drawScore();
          break;
 
        case GAME_OVER:
