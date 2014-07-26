@@ -200,6 +200,7 @@ function handleButtonClick() {
     restartButton.addEventListener("click", function (event){
             resetGame();
             gameOver = false;
+            jamieMode = false;
             gameState = CREATE_GAME;
             itemsToThrow = 5;
             gameLevelNumber = 1;
