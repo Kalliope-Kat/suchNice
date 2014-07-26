@@ -22,6 +22,8 @@ var mouseX, mouseY, mousePositionText;
 
 var walk, blocks, blockArray, spriteX, spriteY;
 
+var cupCake;
+
 var walkingDirection;
 
 var gameOver, timeLimit = 120;
@@ -85,6 +87,8 @@ function displaySprites() {
     
 }
 
+
+
 function drawNewSprite() {
     var walkSheet = new createjs.SpriteSheet({
         images: [queue.getResult("mySprites")],
@@ -134,7 +138,8 @@ function drawGameScreen() {
     grumpyCat.x = 590;
     grumpyCat.y = 410;
     stage.addChild(grumpyCat);
-    displaySprites();
+    //displaySprites();
+    displayCupCake();
 }
 
 function drawGameOverScreen() {
@@ -172,7 +177,8 @@ fileManifest = [
                 {src:"gameOverScreen.jpg", id:'gameOverScreen'},
                 {src:"sprites.png", id:"mySprites"},
                 {src:"gameBackdrop_1.jpg", id:"backDrop1"},
-                {src:"grumpyCat3.png", id:"grumpyCat"}
+                {src:"grumpyCat3.png", id:"grumpyCat"},
+                {src:"tempCupCake.png", id:"cupCake"}
     
             ];
 
@@ -211,6 +217,8 @@ function loadComplete(evt) {
     gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
     backDrop1 = new createjs.Bitmap(queue.getResult("backDrop1"));
     grumpyCat = new createjs.Bitmap(queue.getResult("grumpyCat"));
+    cupCake = new createjs.Bitmap(queue.getResult("cupCake"));
+    console.log("cupCake loaded " +cupCake);
 
     var blockSheet = new createjs.SpriteSheet({
         images: [queue.getResult("mySprites")],
@@ -246,6 +254,20 @@ function loadComplete(evt) {
     numberOfHits = 0;
 }
 
+function displayCupCake() {
+    console.log("cupcake: "+cupCake);
+    cupCake.x = spriteX;
+    cupCake.y = spriteY;
+    stage.addChild(cupCake);
+}
+
+function displayNewCupCake() {
+    cupCake = new createjs.Bitmap(queue.getResult("cupCake"));
+    cupCake.x = spriteX;
+    cupCake.y = spriteY;
+    stage.addChild(cupCake);
+}
+
 function handleMouseDown(event) {
     if(gameState === IN_GAME){
         startXposition = mouseX;
@@ -272,7 +294,7 @@ function handleMouseRelease(event) {
         mouseDragDistance = Math.sqrt(dx + dy);
         console.log("Distance: "+mouseDragDistance);
         gravityY = 0;
-        updateItemMovement();
+        //updateItemMovement();
         updateItemTossedMovement();
         gameState = THROWING_ITEM;
         itemsToThrow--;
@@ -344,8 +366,11 @@ function handleKeyUp(event) {
             console.log("J key released");
             if(jamieMode){
                 jamieMode = false;
+                itemsToThrow = 5;
             } else {
                 jamieMode = true;
+                //var storeItemCount = itemsToThrow;
+                itemsToThrow = 1000000;
             }
             break;
         case 80:
@@ -360,7 +385,8 @@ function handleKeyUp(event) {
             }
             break;
     }
-    displaySprites();
+   // displaySprites();
+    displayCupCake();
 }
 
 
@@ -440,8 +466,8 @@ function moveBall() {
 
 function updateTossedItem() {
     updateItemTossedMovement();
-    walk.x=spriteX;
-    walk.y=spriteY;
+    cupCake.x = spriteX;
+    cupCake.y = spriteY;
 }
 
 function updateItemTossedMovement() {
@@ -461,26 +487,26 @@ function updateItemTossedMovement() {
 }
 
 function checkForCollision() {
-    var collision = ndgmr.checkPixelCollision(grumpyCat,walk);
+    var collision = ndgmr.checkPixelCollision(grumpyCat,cupCake);
          if( collision ){
             spriteX = 50;
             spriteY = 500;
-            drawNewSprite();
+            displayNewCupCake();
             gameState = IN_GAME;
             score++;
             numberOfHits++;
 
          }
-         if ( walk.y + 10 >= canvas.height ) {
+         if ( cupCake.y + 45 >= canvas.height ) {
             spriteX = 50;
             spriteY = 500;
-            drawNewSprite();
+            displayNewCupCake();
             gameState = IN_GAME;
          }
-         if ( walk.x + 20 >= canvas.width || walk.x - 20 < 0){
+         if ( cupCake.x + 50 >= canvas.width || cupCake.x < 0){
             spriteX = 50;
             spriteY = 500;
-            drawNewSprite();
+            displayNewCupCake();
             gameState = IN_GAME;
            } 
 
