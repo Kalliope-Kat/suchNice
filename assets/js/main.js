@@ -8,6 +8,7 @@ var angle = 360;
 var throwAngle, mouseDragDistance;
 var itemX, itemY;
 var gravityY;
+var itemsToThrow, numberOfHits;
 
 var canvas, stage, queue, context;
 var gameState;
@@ -130,8 +131,8 @@ function drawGameScreen() {
 
     stage.addChild(backDrop1);
 
-    grumpyCat.x = 520;
-    grumpyCat.y = 350;
+    grumpyCat.x = 590;
+    grumpyCat.y = 410;
     stage.addChild(grumpyCat);
     displaySprites();
 }
@@ -171,7 +172,7 @@ fileManifest = [
                 {src:"gameOverScreen.jpg", id:'gameOverScreen'},
                 {src:"sprites.png", id:"mySprites"},
                 {src:"gameBackdrop_1.jpg", id:"backDrop1"},
-                {src:"grumpyCat.png", id:"grumpyCat"}
+                {src:"grumpyCat3.png", id:"grumpyCat"}
     
             ];
 
@@ -194,6 +195,9 @@ function handleButtonClick() {
             resetGame();
             gameOver = false;
             gameState = CREATE_GAME;
+            itemsToThrow = 5;
+            gameLevelNumber = 1;
+            score = 0;
         });
 }
 
@@ -238,6 +242,8 @@ function loadComplete(evt) {
     startLoop();
     itemX = 100;
     itemY = 500;
+    
+    numberOfHits = 0;
 }
 
 function handleMouseDown(event) {
@@ -269,6 +275,7 @@ function handleMouseRelease(event) {
         updateItemMovement();
         updateItemTossedMovement();
         gameState = THROWING_ITEM;
+        itemsToThrow--;
         
     }
 }
@@ -277,6 +284,7 @@ function init() {
     resetGameTimer();
     score = 0;
     gameLevelNumber = 1;
+    itemsToThrow = 5;
     openCanvas();
     loadFiles();
     gameOver = false;
@@ -460,6 +468,8 @@ function checkForCollision() {
             drawNewSprite();
             gameState = IN_GAME;
             score++;
+            numberOfHits++;
+
          }
          if ( walk.y + 10 >= canvas.height ) {
             spriteX = 50;
@@ -473,6 +483,8 @@ function checkForCollision() {
             drawNewSprite();
             gameState = IN_GAME;
            } 
+
+           
 }
 
 
@@ -492,6 +504,14 @@ function runGameTimer() {
     if (timerCount%(FPS/10) ===0 ) {
         gameTimer = timerCount/(FPS);
     }
+}
+
+function goToNextLevel() {
+    numberOfHits = 0;
+    resetGameTimer();
+    gameLevelNumber++;
+    itemsToThrow = 5;
+    gameState = CREATE_GAME;
 }
 
 function resetThrowItem() {
@@ -564,10 +584,19 @@ function loop() {
          break;
        case IN_GAME:
          //gameLoop();
-
+         console.log(itemsToThrow);
          drawScore();
          //moveBall();
+         if(numberOfHits === 3){
+            goToNextLevel();
+         }
+         if(itemsToThrow === 0) {
+
+            gameState = GAME_OVER;
+            gameOver = true;
+         }
          if(gameTimer > timeLimit) { gameState = GAME_OVER; gameOver = true; }
+         
          break;
        case THROWING_ITEM:
          //drawBall();
@@ -575,6 +604,7 @@ function loop() {
          updateTossedItem();
          checkForCollision();
          drawScore();
+
          break;
 
        case GAME_OVER:
