@@ -17,6 +17,7 @@ var titleScreen, instructionsScreen, button, backDrop1, grumpyCat;
 var gameTimer, gameLevelNumber;
 var gameOver, score, scoreText;
 var TITLE = 0, INSTRUCTIONS = 1, CREATE_GAME = 2, IN_GAME = 3, GAME_OVER = 4, PAUSED = 5, THROWING_ITEM= 6;
+var LVL1 = 11, LVL2 = 9, LVL3 = 7, LVL4 = 5, LVL5 = 3;
 
 var mouseX, mouseY, mousePositionText;
 
@@ -217,7 +218,7 @@ function handleButtonClick() {
             gameOver = false;
             jamieMode = false;
             gameState = CREATE_GAME;
-            itemsToThrow = 5;
+            itemsToThrow = LVL1;
             gameLevelNumber = 1;
             score = 0;
         });
@@ -262,7 +263,9 @@ function loadComplete(evt) {
     spriteY = 500;
     mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
     scoreText = new createjs.Text("Score: "+ score, "19px Arial", "#253742"); 
+    itemsText = new createjs.Text("Ammo: " + itemsToThrow, "19px Arial", "#253742");
     drawScore();
+    drawAmmo();
     startLoop();
     itemX = 100;
     itemY = 500;
@@ -322,7 +325,7 @@ function init() {
     resetGameTimer();
     score = 0;
     gameLevelNumber = 1;
-    itemsToThrow = 5;
+    itemsToThrow = LVL1;
     openCanvas();
     loadFiles();
     gameOver = false;
@@ -382,7 +385,24 @@ function handleKeyUp(event) {
             console.log("J key released");
             if(jamieMode){
                 jamieMode = false;
-                itemsToThrow = 5;
+                    switch(gameLevelNumber){
+                        case 1:
+                            itemsToThrow = LVL1;
+                            break;
+                        case 2:
+                            itemsToThrow = LVL2;
+                            break;
+                        case 3:
+                            itemsToThrow = LVL3;
+                            break;
+                        case 4:
+                            itemsToThrow = LVL4;
+                            break;
+                        case 5:
+                            itemsToThrow = LVL5;
+                            break;
+                        }
+                
             } else {
                 jamieMode = true;
                 //var storeItemCount = itemsToThrow;
@@ -428,6 +448,12 @@ function drawScore() {
     scoreText.y = 15;
 
     stage.addChild(scoreText);
+}
+function drawAmmo(){
+    itemsText.x = 400;
+    itemsText.y = 15;
+    
+    stage.addChild(itemsText);
 }
 
 function drawLevelSign() {
@@ -552,7 +578,23 @@ function goToNextLevel() {
     numberOfHits = 0;
     resetGameTimer();
     gameLevelNumber++;
-    itemsToThrow = 5;
+    switch(gameLevelNumber){
+        case 1:
+            itemsToThrow = LVL1;
+            break;
+        case 2:
+            itemsToThrow = LVL2;
+            break;
+        case 3:
+            itemsToThrow = LVL3;
+            break;
+        case 4:
+            itemsToThrow = LVL4;
+            break;
+        case 5:
+            itemsToThrow = LVL5;
+            break;
+    }
     gameState = CREATE_GAME;
 }
 
@@ -602,6 +644,7 @@ function main() {
 function loop() {
     runGameTimer();
      scoreText.text = "Score: " + score;
+    itemsText.text = "Ammo: " + itemsToThrow;
     switch(gameState) {
      //case CONSTRUCT:
        //construct();
@@ -628,6 +671,8 @@ function loop() {
          //gameLoop();
          console.log(itemsToThrow);
          drawScore();
+         drawAmmo();
+         
          //moveBall();
          if(numberOfHits === 3){
             goToNextLevel();
@@ -646,6 +691,7 @@ function loop() {
          updateTossedItem();
          checkForCollision();
          drawScore();
+         drawAmmo();
 
          break;
 
