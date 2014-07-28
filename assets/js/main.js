@@ -298,22 +298,19 @@ function handleMouseRelease(event) {
     if(gameState === IN_GAME){
         endXposition = mouseX;
         endYposition = mouseY;
-        console.log("Start X & Y: " + startXposition + ", " + startYposition);
-        console.log("End X & Y: " + endXposition + ", " + endYposition);
         var dy = (endYposition - startYposition);
         var dx = (endXposition - startXposition);
         var theta = Math.atan2(dy, dx);
         theta *= RADTODEG;
         theta += 180;
         throwAngle = theta;
-        console.log("Angle: "+ theta);
 
         dy *= dy;
         dx *= dx;
         mouseDragDistance = Math.sqrt(dx + dy);
-        console.log("Distance: "+mouseDragDistance);
         gravityY = 0;
         //updateItemMovement();
+        console.log("stuffs: "+mouseDragDistance*0.1);
         updateItemTossedMovement();
         gameState = THROWING_ITEM;
         itemsToThrow--;
@@ -517,6 +514,9 @@ function updateItemTossedMovement() {
     var previousXLocation = spriteX;
     var previousYLocation = spriteY;
     var radians = throwAngle * DEGTORAD;
+    if( mouseDragDistance * 0.1 > 30) {
+        mouseDragDistance = 295;
+    }
     var spriteXmod = ((mouseDragDistance*0.1)*Math.cos(radians));
     var spriteYmod = ((mouseDragDistance*0.1)*Math.sin(radians));
 
@@ -620,13 +620,11 @@ function updateItemMovement() {
     var radians = throwAngle * DEGTORAD;
     var itemXmod = ((mouseDragDistance*.1)*Math.cos(radians));
     var itemYmod = ((mouseDragDistance*.1)*Math.sin(radians));
+    
 
     itemX += itemXmod;
     itemY += itemYmod;
-    if(throwAngle < 360){
-        //throwAngle++;
-    }
-    //mouseDragDistance = 25;
+   
     
     itemY += gravityY;
     gravityY += 0.5;
