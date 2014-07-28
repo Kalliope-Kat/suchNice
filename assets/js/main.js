@@ -13,10 +13,10 @@ var itemsToThrow, numberOfHits;
 var canvas, stage, queue, context;
 var gameState;
 var startButton, instructionsButton, restartButton;
-var titleScreen, instructionsScreen, button, backDrop1, grumpyCat;
+var titleScreen, instructionsScreen, winScreen, button, backDrop1, grumpyCat;
 var gameLevelNumber;
 var gameOver, score, scoreText;
-var TITLE = 0, INSTRUCTIONS = 1, CREATE_GAME = 2, IN_GAME = 3, GAME_OVER = 4, PAUSED = 5, THROWING_ITEM= 6;
+var TITLE = 0, INSTRUCTIONS = 1, CREATE_GAME = 2, IN_GAME = 3, GAME_OVER = 4, PAUSED = 5, THROWING_ITEM= 6, WIN_GAME = 7;
 var LVL1 = 11, LVL2 = 9, LVL3 = 7, LVL4 = 5, LVL5 = 3;
 
 var mouseX, mouseY, mousePositionText;
@@ -183,6 +183,24 @@ function drawGameOverScreen() {
     stage.addChild(restartButton);
 }
 
+function drawWinScreen() {
+    stage.removeAllChildren();
+    winScreen.x = 0;
+    winScreen.y = 0;
+
+    var finalScoreText = new createjs.Text("Final Score: "+ score, "30px Arial", "#253742"); 
+    finalScoreText.x = 300; 
+    finalScoreText.y = 260;
+    finalScoreText.textBaseline = "alphabetic";
+
+    restartButton.x = 500;
+    restartButton.y = 500;
+
+    stage.addChild(winScreen);
+    stage.addChild(finalScoreText);
+    stage.addChild(restartButton);
+}
+
 fileManifest = [
                 {src:"titleScreen.jpg", id:"titleScreen"},
                 {src:"instructionsScreen.jpg", id:"instructionsScreen"},
@@ -194,7 +212,8 @@ fileManifest = [
                 {src:"sprites.png", id:"mySprites"},
                 {src:"gameBackdrop.png", id:"backDrop1"},
                 {src:"grumpyCat3.png", id:"grumpyCat"},
-                {src:"tempCupCake.png", id:"cupCake"}
+                {src:"tempCupCake.png", id:"cupCake"},
+                {src:"WinScreen.png", id:"winScreen"}
     
             ];
 
@@ -235,6 +254,7 @@ function loadComplete(evt) {
     backDrop1 = new createjs.Bitmap(queue.getResult("backDrop1"));
     grumpyCat = new createjs.Bitmap(queue.getResult("grumpyCat"));
     cupCake = new createjs.Bitmap(queue.getResult("cupCake"));
+    winScreen = new createjs.Bitmap(queue.getResult("winScreen"));
 
     var blockSheet = new createjs.SpriteSheet({
         images: [queue.getResult("mySprites")],
@@ -656,6 +676,12 @@ function loop() {
          drawAmmo();
          
          //moveBall();
+         if(gameLevelNumber === 5 && numberOfHits === 3){
+            drawWinScreen();
+            gameState = WIN_GAME;
+            gameOver = true;
+            break;
+         }
          if(numberOfHits === 3){
             goToNextLevel();
          }
@@ -678,9 +704,10 @@ function loop() {
 
        case GAME_OVER:
          drawGameOverScreen();
-         //hideGame();
          break;
-      
+       case WIN_GAME:
+        //drawWinScreen();
+         break;
        case PAUSED:
             break;
    }
