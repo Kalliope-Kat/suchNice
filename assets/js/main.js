@@ -192,7 +192,7 @@ fileManifest = [
                 {src:"gameScreen.jpg", id:"gameScreen"},
                 {src:"gameOverScreen.jpg", id:'gameOverScreen'},
                 {src:"sprites.png", id:"mySprites"},
-                {src:"gameBackdrop_1.jpg", id:"backDrop1"},
+                {src:"gameBackdrop.png", id:"backDrop1"},
                 {src:"grumpyCat3.png", id:"grumpyCat"},
                 {src:"tempCupCake.png", id:"cupCake"}
     
@@ -261,8 +261,8 @@ function loadComplete(evt) {
     spriteX = 50;
     spriteY = 500;
     mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
-    scoreText = new createjs.Text("Score: "+ score, "19px Arial", "#253742"); 
-    itemsText = new createjs.Text("Ammo: " + itemsToThrow, "19px Arial", "#253742");
+    scoreText = new createjs.Text("Score: "+ score, "19px Arial Bold", "#253742"); 
+    itemsText = new createjs.Text("Ammo: " + itemsToThrow, "19px Arial Bold", "#253742");
     drawScore();
     drawAmmo();
     startLoop();
