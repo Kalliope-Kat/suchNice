@@ -118,12 +118,27 @@ function drawInstructionsScreen() {
     text.x = 270; 
     text.y = 100;
 
+    var text2 = new createjs.Text("You have 5 cupcakes and you must hit grumpy cat at least 3 times.", "20px Arial", "#EFC94C"); 
+    text2.x = 97; 
+    text2.y = 220;
+
+    var text3 = new createjs.Text("Drag and hold the mouse to the desired angle and power level.  ", "17px Arial", "#EFC94C"); 
+    text3.x = 175; 
+    text3.y = 280;
+
+    var text4 = new createjs.Text("Relase the mouse to fire.  ", "17px Arial", "#EFC94C"); 
+    text4.x = 310; 
+    text4.y = 320;
+
     startButton.x = 600;
     startButton.y = 500;
 
 
     stage.addChild(instructionsScreen);
     stage.addChild(text);
+    stage.addChild(text2);
+    stage.addChild(text3);
+    stage.addChild(text4);
     stage.addChild(startButton);
 }
 
