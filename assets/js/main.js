@@ -14,7 +14,7 @@ var canvas, stage, queue, context;
 var gameState;
 var startButton, instructionsButton, restartButton;
 var titleScreen, instructionsScreen, button, backDrop1, grumpyCat;
-var gameTimer, gameLevelNumber;
+var gameLevelNumber;
 var gameOver, score, scoreText;
 var TITLE = 0, INSTRUCTIONS = 1, CREATE_GAME = 2, IN_GAME = 3, GAME_OVER = 4, PAUSED = 5, THROWING_ITEM= 6;
 var LVL1 = 11, LVL2 = 9, LVL3 = 7, LVL4 = 5, LVL5 = 3;
@@ -235,7 +235,6 @@ function loadComplete(evt) {
     backDrop1 = new createjs.Bitmap(queue.getResult("backDrop1"));
     grumpyCat = new createjs.Bitmap(queue.getResult("grumpyCat"));
     cupCake = new createjs.Bitmap(queue.getResult("cupCake"));
-    console.log("cupCake loaded " +cupCake);
 
     var blockSheet = new createjs.SpriteSheet({
         images: [queue.getResult("mySprites")],
@@ -274,7 +273,6 @@ function loadComplete(evt) {
 }
 
 function displayCupCake() {
-    console.log("cupcake: "+cupCake);
     cupCake.x = spriteX;
     cupCake.y = spriteY;
     stage.addChild(cupCake);
@@ -319,7 +317,7 @@ function handleMouseRelease(event) {
 }
 
 function init() {
-    resetGameTimer();
+    
     score = 0;
     gameLevelNumber = 1;
     itemsToThrow = LVL1;
@@ -419,7 +417,7 @@ function handleKeyUp(event) {
             break;
     }
    // displaySprites();
-    displayCupCake();
+    //displayCupCake();
 }
 
 
@@ -556,27 +554,15 @@ function checkForCollision() {
 }
 
 
-function resetGameTimer() {
-    timerCount = 0;
-    gameTimer = 0;
-}
-
 function resetGame() {
-    resetGameTimer();
     score = 0;
     gameLevelNumber = 1;
 }
 
-function runGameTimer() {
-    timerCount += 1;
-    if (timerCount%(FPS/10) ===0 ) {
-        gameTimer = timerCount/(FPS);
-    }
-}
+
 
 function goToNextLevel() {
     numberOfHits = 0;
-    resetGameTimer();
     gameLevelNumber++;
     switch(gameLevelNumber){
         case 1:
@@ -640,7 +626,6 @@ function main() {
     
 }
 function loop() {
-    runGameTimer();
      scoreText.text = "Score: " + score;
     itemsText.text = "Ammo: " + itemsToThrow;
     switch(gameState) {
@@ -663,7 +648,6 @@ function loop() {
          //showGame();
          //hideTitle();
          gameState = IN_GAME;
-         resetGameTimer();
          break;
        case IN_GAME:
          //gameLoop();
@@ -675,13 +659,12 @@ function loop() {
          if(numberOfHits === 3){
             goToNextLevel();
          }
-         if(itemsToThrow === 0) {
+         if(itemsToThrow === 0 || itemsToThrow < 3 - numberOfHits) {
 
             gameState = GAME_OVER;
             gameOver = true;
          }
-         if(gameTimer > timeLimit) { gameState = GAME_OVER; gameOver = true; }
-         
+              
          break;
        case THROWING_ITEM:
          //drawBall();
