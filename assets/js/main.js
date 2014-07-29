@@ -21,6 +21,8 @@ var LVL1 = 11, LVL2 = 9, LVL3 = 7, LVL4 = 5, LVL5 = 3;
 
 var mouseX, mouseY, mousePositionText;
 
+var powerText, angleText, userAngle, userPower;
+
 var walk, blocks, blockArray, spriteX, spriteY;
 
 var cupCake;
@@ -283,6 +285,8 @@ function loadComplete(evt) {
     mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
     scoreText = new createjs.Text("Score: "+ score, "19px Arial Bold", "#253742"); 
     itemsText = new createjs.Text("Ammo: " + itemsToThrow, "19px Arial Bold", "#253742");
+	powerText = new createjs.Text("Power: ", "19px Arial Bold", "#253742");
+	angleText = new createjs.Text("\u00B0", "19px Arial Bold", "#253742");
     drawScore();
     drawAmmo();
     startLoop();
@@ -305,10 +309,14 @@ function displayNewCupCake() {
     stage.addChild(cupCake);
 }
 
+var isDown = false;
+var shape;
+
 function handleMouseDown(event) {
     if(gameState === IN_GAME){
         startXposition = mouseX;
         startYposition = mouseY;
+		isDown = true;
     }
 }
 
@@ -316,24 +324,76 @@ function handleMouseRelease(event) {
     if(gameState === IN_GAME){
         endXposition = mouseX;
         endYposition = mouseY;
-        var dy = (endYposition - startYposition);
-        var dx = (endXposition - startXposition);
-        var theta = Math.atan2(dy, dx);
-        theta *= RADTODEG;
-        theta += 180;
-        throwAngle = theta;
-
-        dy *= dy;
-        dx *= dx;
-        mouseDragDistance = Math.sqrt(dx + dy);
-        gravityY = 0;
-        //updateItemMovement();
-        console.log("stuffs: "+mouseDragDistance*0.1);
+        
         updateItemTossedMovement();
         gameState = THROWING_ITEM;
         itemsToThrow--;
-        
+        isDown = false;
+		stage.removeChild(shape);
+		stage.removeChild(powerText);
+		stage.removeChild(angleText);
     }
+}
+
+function calcAnglePower(mouseX, mouseY)
+{
+		var dy = (mouseY - startYposition);
+        var dx = (mouseX - startXposition);
+        var theta = Math.atan2(dy, dx);
+        theta *= RADTODEG;
+		
+		userAngle = (theta - 180)*-1;
+		
+        theta += 180;
+        throwAngle = theta;
+		throwAngle = Math.floor(throwAngle);
+		userAngle = Math.floor(userAngle);
+		dy *= dy;
+        dx *= dx;
+        mouseDragDistance = Math.sqrt(dx + dy);
+        gravityY = 0;
+		mouseDragDistance = Math.floor(mouseDragDistance);
+		displayShotInfo();
+}
+
+function displayShotInfo()
+{
+	userPower = mouseDragDistance;
+	if(userPower > 300)
+	{
+		userPower = 300;
+	}
+}
+
+function handleMouseMove(event)
+{
+	if(gameState === IN_GAME && isDown === true)
+	{
+		stage.removeChild(shape);
+		shape = new createjs.Shape();
+		stage.addChild(shape);
+		
+		calcAnglePower(mouseX, mouseY);
+		
+		powerText.text = "Power: " + userPower;
+		angleText.text = userAngle + "\u00B0";
+		
+		powerText.x = mouseX + 5;
+		powerText.y = mouseY + 40;
+		
+		angleText.x = startXposition + 5;
+		angleText.y = startYposition - 10;
+		
+		stage.addChild(powerText);
+		stage.addChild(angleText);
+		
+		shape.graphics.beginStroke("000").moveTo(startXposition,startYposition).lineTo(mouseX,mouseY);
+		
+		stage.update();
+		
+		
+	}
+	
 }
 
 function init() {
@@ -352,6 +412,7 @@ function init() {
     document.onkeyup = handleKeyUp;
     stage.on("mousedown", handleMouseDown);
     stage.on("pressup", handleMouseRelease);
+	stage.on("stagemousemove", handleMouseMove);
      
 }
 
@@ -576,6 +637,7 @@ function checkForCollision() {
 
 function resetGame() {
     score = 0;
+	numberOfHits = 0;
     gameLevelNumber = 1;
 }
 
@@ -646,8 +708,10 @@ function main() {
     
 }
 function loop() {
-     scoreText.text = "Score: " + score;
+    scoreText.text = "Score: " + score;
     itemsText.text = "Ammo: " + itemsToThrow;
+	powerText.text = "Power: " + userPower;
+	angleText.text = userAngle + "\u00B0";;
     switch(gameState) {
      //case CONSTRUCT:
        //construct();
@@ -671,7 +735,7 @@ function loop() {
          break;
        case IN_GAME:
          //gameLoop();
-         console.log(itemsToThrow);
+         //console.log(itemsToThrow);
          drawScore();
          drawAmmo();
          
