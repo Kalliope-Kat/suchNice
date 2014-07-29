@@ -25,7 +25,7 @@ var powerText, angleText, userAngle, userPower;
 
 var walk, blocks, blockArray, spriteX, spriteY;
 
-var cupCake;
+var itemToChuck, cupCake;
 
 var walkingDirection;
 
@@ -38,6 +38,9 @@ var score;//High score persistance if time available
 var startXposition, startYposition, endXposition, endYposition;
 var ball;
 blockArray = [];
+
+var isDown = false;
+var shape;
 
 
 
@@ -106,10 +109,10 @@ function drawNewSprite() {
     
     walk = new createjs.Sprite(walkSheet);
 
-    walk.x=spriteX;
-    walk.y=spriteY;
-    walk.gotoAndPlay(walkingDirection);
-    stage.addChild(walk);
+    // walk.x=spriteX;
+    // walk.y=spriteY;
+    // walk.gotoAndPlay(walkingDirection);
+    // stage.addChild(walk);
 }
 
 function drawInstructionsScreen() {
@@ -157,7 +160,8 @@ function drawGameScreen() {
     grumpyCat.y = 410;
     stage.addChild(grumpyCat);
     //displaySprites();
-    displayCupCake();
+    //displayCupCake();
+    displayItemToChuck();
 }
 
 function drawGameOverScreen() {
@@ -303,14 +307,41 @@ function displayCupCake() {
 }
 
 function displayNewCupCake() {
-    cupCake = new createjs.Bitmap(queue.getResult("cupCake"));
-    cupCake.x = spriteX;
-    cupCake.y = spriteY;
-    stage.addChild(cupCake);
+    selectRandomItem();
+    if(itemToChuck === walk) {
+        drawNewSprite();
+    }
+    else if(itemToChuck === cupCake) {
+        itemToChuck = new createjs.Bitmap(queue.getResult('cupCake'));
+    }
+    
+    itemToChuck.x = spriteX;
+    itemToChuck.y = spriteY;
+    stage.addChild(itemToChuck);
 }
 
-var isDown = false;
-var shape;
+
+
+function displayItemToChuck() {
+    selectRandomItem();
+    //itemToChuck = cupCake;
+    itemToChuck.x = spriteX;
+    itemToChuck.y = spriteY;
+    stage.addChild(itemToChuck);
+}
+
+function selectRandomItem() {
+    var rand = Math.floor(Math.random()* 10);
+    if(rand < 5){
+        itemToChuck = cupCake;
+    }
+    else if(rand > 5){
+        itemToChuck = walk;
+    }
+
+}
+
+
 
 function handleMouseDown(event) {
     if(gameState === IN_GAME){
@@ -332,6 +363,7 @@ function handleMouseRelease(event) {
 		stage.removeChild(shape);
 		stage.removeChild(powerText);
 		stage.removeChild(angleText);
+
     }
 }
 
@@ -352,6 +384,7 @@ function calcAnglePower(mouseX, mouseY)
         dx *= dx;
         mouseDragDistance = Math.sqrt(dx + dy);
         gravityY = 0;
+
 		mouseDragDistance = Math.floor(mouseDragDistance);
 		displayShotInfo();
 }
@@ -390,10 +423,9 @@ function handleMouseMove(event)
 		shape.graphics.beginStroke("000").moveTo(startXposition,startYposition).lineTo(mouseX,mouseY);
 		
 		stage.update();
-		
-		
+			
 	}
-	
+
 }
 
 function init() {
@@ -584,8 +616,8 @@ function moveBall() {
 
 function updateTossedItem() {
     updateItemTossedMovement();
-    cupCake.x = spriteX;
-    cupCake.y = spriteY;
+    itemToChuck.x = spriteX;
+    itemToChuck.y = spriteY;
 }
 
 function updateItemTossedMovement() {
@@ -608,7 +640,7 @@ function updateItemTossedMovement() {
 }
 
 function checkForCollision() {
-    var collision = ndgmr.checkPixelCollision(grumpyCat,cupCake);
+    var collision = ndgmr.checkPixelCollision(grumpyCat,itemToChuck);
          if( collision ){
             spriteX = 50;
             spriteY = 500;
@@ -618,13 +650,13 @@ function checkForCollision() {
             numberOfHits++;
 
          }
-         if ( cupCake.y + 45 >= canvas.height ) {
+         if ( itemToChuck.y + 45 >= canvas.height ) {
             spriteX = 50;
             spriteY = 500;
             displayNewCupCake();
             gameState = IN_GAME;
          }
-         if ( cupCake.x + 50 >= canvas.width || cupCake.x < 0){
+         if ( itemToChuck.x + 50 >= canvas.width || cupCake.x < 0){
             spriteX = 50;
             spriteY = 500;
             displayNewCupCake();
@@ -711,7 +743,7 @@ function loop() {
     scoreText.text = "Score: " + score;
     itemsText.text = "Ammo: " + itemsToThrow;
 	powerText.text = "Power: " + userPower;
-	angleText.text = userAngle + "\u00B0";;
+	angleText.text = userAngle + "\u00B0";
     switch(gameState) {
      //case CONSTRUCT:
        //construct();
@@ -734,8 +766,7 @@ function loop() {
          gameState = IN_GAME;
          break;
        case IN_GAME:
-         //gameLoop();
-         //console.log(itemsToThrow);
+
          drawScore();
          drawAmmo();
          
