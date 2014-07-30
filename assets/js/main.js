@@ -31,7 +31,7 @@ var walkingDirection;
 
 var gameOver, timeLimit = 120;
 
-var jamieMode, paused;
+var jamieMode, paused, ammoBar, ammoBarWidth;
 
 var score;//High score persistance if time available 
 
@@ -91,6 +91,59 @@ function displaySprites() {
     //     stage.addChild(blockArray[j]);  
     // }
     
+}
+
+function drawAmmoBar() {
+    var text = new createjs.Text("Ammo", "18px Arial", "#DDD"); 
+    text.x = 7; 
+    text.y = 11;
+    ammoBar = new createjs.Shape();
+            ammoBar.graphics.setStrokeStyle(2, 'square', 'square');
+            ammoBar.graphics.beginStroke(('#444'));
+            ammoBar.graphics.beginFill("#DDD").drawRect(60,10,150, 25);
+            ammoBar.graphics.beginFill("#C55").drawRect(60,10,ammoBarWidth, 25);
+            ammoBar.graphics.endStroke();
+            ammoBar.graphics.endFill();
+            
+            ammoBar.graphics.endStroke();
+            stage.addChild(ammoBar);
+            stage.addChild(text);
+}
+
+function upDateAmmoBar() {
+    var newWidth;
+    switch(gameLevelNumber){
+        case 1:
+            newWidth = itemsToThrow/11;
+            ammoBarWidth = newWidth*150;
+            stage.removeChild(ammoBar);
+            drawAmmoBar();
+            break;
+        case 2:
+            newWidth = itemsToThrow/9;
+            ammoBarWidth = newWidth*150;
+            stage.removeChild(ammoBar);
+            drawAmmoBar();
+            break;
+        case 3:
+            newWidth = itemsToThrow/7;
+            ammoBarWidth = newWidth*150;
+            stage.removeChild(ammoBar);
+            drawAmmoBar();
+            break;
+        case 4:
+            newWidth = itemsToThrow/5;
+            ammoBarWidth = newWidth*150;
+            stage.removeChild(ammoBar);
+            drawAmmoBar();
+            break;
+        case 5:
+            newWidth = itemsToThrow/3;
+            ammoBarWidth = newWidth*150;
+            stage.removeChild(ammoBar);
+            drawAmmoBar();
+            break;
+    }
 }
 
 
@@ -161,6 +214,8 @@ function drawGameScreen() {
     stage.addChild(grumpyCat);
     //displaySprites();
     //displayCupCake();
+    ammoBarWidth = 150;
+    drawAmmoBar();
     displayItemToChuck();
 }
 
@@ -294,7 +349,6 @@ function loadComplete(evt) {
 	powerText = new createjs.Text("Power: ", "19px Arial Bold", "#253742");
 	angleText = new createjs.Text("\u00B0", "19px Arial Bold", "#253742");
     drawScore();
-    drawAmmo();
     startLoop();
     itemX = 100;
     itemY = 500;
@@ -355,6 +409,7 @@ function handleMouseRelease(event) {
         updateItemTossedMovement();
         gameState = THROWING_ITEM;
         itemsToThrow--;
+        upDateAmmoBar();
         isDown = false;
 		stage.removeChild(shape);
 		stage.removeChild(powerText);
@@ -472,21 +527,13 @@ function handleKeyUp(event) {
     if(!gameOver) {
     switch(event.keyCode) {
         case 38:
-            console.log("Up released");
-            break;
         case 37:
-            console.log("Left released");
-            walkingDirection = "walkLeft";
             break;
         case 39:
-            console.log("Right released");
-            walkingDirection = "walkRight";
             break;
         case 40:
-            console.log("Down released");
             break;
         case 74:
-            console.log("J key released");
             if(jamieMode){
                 jamieMode = false;
                     switch(gameLevelNumber){
@@ -512,6 +559,7 @@ function handleKeyUp(event) {
                 //var storeItemCount = itemsToThrow;
                 itemsToThrow = 1000000;
             }
+            upDateAmmoBar();
             break;
         case 80:
             console.log("Pause Pressed");
@@ -549,15 +597,9 @@ function drawMouseCords() {
 
 function drawScore() {
     scoreText.x = 700; 
-    scoreText.y = 15;
+    scoreText.y = 12;
 
     stage.addChild(scoreText);
-}
-function drawAmmo(){
-    itemsText.x = 400;
-    itemsText.y = 15;
-    
-    stage.addChild(itemsText);
 }
 
 function drawLevelSign() {
@@ -737,7 +779,6 @@ function main() {
 }
 function loop() {
     scoreText.text = "Score: " + score;
-    itemsText.text = "Ammo: " + itemsToThrow;
 	powerText.text = "Power: " + userPower;
 	angleText.text = userAngle + "\u00B0";
     switch(gameState) {
@@ -764,8 +805,6 @@ function loop() {
        case IN_GAME:
 
          drawScore();
-         drawAmmo();
-         
          //moveBall();
          if(gameLevelNumber === 5 && numberOfHits === 3){
             drawWinScreen();
@@ -789,7 +828,6 @@ function loop() {
          updateTossedItem();
          checkForCollision();
          drawScore();
-         drawAmmo();
 
          break;
 
