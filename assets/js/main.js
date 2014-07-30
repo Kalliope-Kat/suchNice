@@ -709,6 +709,7 @@ function checkForCollision() {
         grumpyCat.x = 590;
         grumpyCat.y = 410;
         stage.addChild(grumpyCat);
+        drawAmmoBar();
         displayItemToChuck();
         gameState = IN_GAME;
     }
