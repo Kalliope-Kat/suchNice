@@ -13,7 +13,7 @@ var itemsToThrow, numberOfHits;
 var canvas, stage, queue, context;
 var gameState;
 var startButton, instructionsButton, restartButton;
-var titleScreen, instructionsScreen, winScreen, button, backDrop1, grumpyCat;
+var titleScreen, instructionsScreen, winScreen, button, backDrop1, grumpyCat, easterHit, easterBackdrop;
 var gameLevelNumber;
 var gameOver, score, scoreText;
 var TITLE = 0, INSTRUCTIONS = 1, CREATE_GAME = 2, IN_GAME = 3, GAME_OVER = 4, PAUSED = 5, THROWING_ITEM= 6, WIN_GAME = 7;
@@ -208,10 +208,17 @@ function drawGameScreen() {
 
 
     stage.addChild(backDrop1);
+    
+    
 
     grumpyCat.x = 590;
     grumpyCat.y = 410;
     stage.addChild(grumpyCat);
+    
+    easterHit.x = 0;
+    easterHit.y = 5;
+    stage.addChild(easterHit);
+    console.log("easter egg added to screen");
     //displaySprites();
     //displayCupCake();
     ammoBarWidth = 150;
@@ -275,7 +282,10 @@ fileManifest = [
                 {src:"grumpyCat3.png", id:"grumpyCat"},
                 {src:"tempCupCake.png", id:"cupCake"},
                 {src:"WinScreen.png", id:"winScreen"},
-                {src:"GingerbreadMan.png", id:"gingerBread"}
+                {src:"GingerbreadMan.png", id:"gingerBread"},
+                {src:"easterHit.png", id:"easterHit"},
+                {src:"easterBackdrop.png", id:"easterBackdrop"}
+    
     
             ];
 
@@ -318,6 +328,8 @@ function loadComplete(evt) {
     cupCake = new createjs.Bitmap(queue.getResult("cupCake"));
     gingerBread = new createjs.Bitmap(queue.getResult("gingerBread"));
     winScreen = new createjs.Bitmap(queue.getResult("winScreen"));
+    easterHit = new createjs.Bitmap(queue.getResult("easterHit"));
+    easterBackdrop = new createjs.Bitmap(queue.getResult("easterBackdrop"));
 
     var blockSheet = new createjs.SpriteSheet({
         images: [queue.getResult("mySprites")],
@@ -679,6 +691,7 @@ function updateItemTossedMovement() {
 
 function checkForCollision() {
     var collision = ndgmr.checkPixelCollision(grumpyCat,itemToChuck);
+    var easterCollision = ndgmr.checkRectCollision(easterHit,itemToChuck);
          if( collision ){
             spriteX = 50;
             spriteY = 500;
@@ -688,6 +701,17 @@ function checkForCollision() {
             numberOfHits++;
 
          }
+    if(easterCollision){
+        console.log("Hit easter egg!");
+        spriteX = 50;
+        spriteY = 500;
+        stage.addChild(easterBackdrop);
+        grumpyCat.x = 590;
+        grumpyCat.y = 410;
+        stage.addChild(grumpyCat);
+        displayItemToChuck();
+        gameState = IN_GAME;
+    }
          if ( itemToChuck.y + 45 >= canvas.height ) {
             spriteX = 50;
             spriteY = 500;
