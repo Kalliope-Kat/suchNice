@@ -25,7 +25,7 @@ var powerText, angleText, userAngle, userPower;
 
 var walk, blocks, blockArray, spriteX, spriteY;
 
-var itemToChuck, cupCake;
+var itemToChuck, cupCake, gingerBread;
 
 var walkingDirection;
 
@@ -219,7 +219,8 @@ fileManifest = [
                 {src:"gameBackdrop.png", id:"backDrop1"},
                 {src:"grumpyCat3.png", id:"grumpyCat"},
                 {src:"tempCupCake.png", id:"cupCake"},
-                {src:"WinScreen.png", id:"winScreen"}
+                {src:"WinScreen.png", id:"winScreen"},
+                {src:"GingerbreadMan.png", id:"gingerBread"}
     
             ];
 
@@ -260,6 +261,7 @@ function loadComplete(evt) {
     backDrop1 = new createjs.Bitmap(queue.getResult("backDrop1"));
     grumpyCat = new createjs.Bitmap(queue.getResult("grumpyCat"));
     cupCake = new createjs.Bitmap(queue.getResult("cupCake"));
+    gingerBread = new createjs.Bitmap(queue.getResult("gingerBread"));
     winScreen = new createjs.Bitmap(queue.getResult("winScreen"));
 
     var blockSheet = new createjs.SpriteSheet({
@@ -300,31 +302,25 @@ function loadComplete(evt) {
     numberOfHits = 0;
 }
 
-function displayCupCake() {
-    cupCake.x = spriteX;
-    cupCake.y = spriteY;
-    stage.addChild(cupCake);
-}
 
-function displayNewCupCake() {
+
+function displayItemToChuck() {
     selectRandomItem();
-    if(itemToChuck === walk) {
-        drawNewSprite();
+    if(itemToChuck === cupCake){
+    cupCake = new createjs.Bitmap(queue.getResult('cupCake'));
+    itemToChuck = cupCake;
     }
-    else if(itemToChuck === cupCake) {
-        itemToChuck = new createjs.Bitmap(queue.getResult('cupCake'));
+    else if(itemToChuck === gingerBread){
+    gingerBread = new createjs.Bitmap(queue.getResult('gingerBread'));
+    itemToChuck = gingerBread;
     }
-    
     itemToChuck.x = spriteX;
     itemToChuck.y = spriteY;
     stage.addChild(itemToChuck);
 }
 
-
-
-function displayItemToChuck() {
+function displayNewItemToChuck() {
     selectRandomItem();
-    //itemToChuck = cupCake;
     itemToChuck.x = spriteX;
     itemToChuck.y = spriteY;
     stage.addChild(itemToChuck);
@@ -336,7 +332,7 @@ function selectRandomItem() {
         itemToChuck = cupCake;
     }
     else if(rand > 5){
-        itemToChuck = walk;
+        itemToChuck = gingerBread;
     }
 
 }
@@ -644,7 +640,7 @@ function checkForCollision() {
          if( collision ){
             spriteX = 50;
             spriteY = 500;
-            displayNewCupCake();
+            displayItemToChuck();
             gameState = IN_GAME;
             score++;
             numberOfHits++;
@@ -653,13 +649,13 @@ function checkForCollision() {
          if ( itemToChuck.y + 45 >= canvas.height ) {
             spriteX = 50;
             spriteY = 500;
-            displayNewCupCake();
+            displayItemToChuck();
             gameState = IN_GAME;
          }
-         if ( itemToChuck.x + 50 >= canvas.width || cupCake.x < 0){
+         if ( itemToChuck.x + 50 >= canvas.width || itemToChuck.x < 0){
             spriteX = 50;
             spriteY = 500;
-            displayNewCupCake();
+            displayItemToChuck();
             gameState = IN_GAME;
            } 
 
