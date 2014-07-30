@@ -23,9 +23,9 @@ var mouseX, mouseY, mousePositionText;
 
 var powerText, angleText, userAngle, userPower;
 
-var walk, blocks, blockArray, spriteX, spriteY;
+var walk, blocks, blockArray, spriteX, spriteY, powerUpX, powerUpY;
 
-var itemToChuck, cupCake, gingerBread;
+var itemToChuck, powerUp, cupCake, gingerBread;
 
 var walkingDirection;
 
@@ -223,6 +223,7 @@ function drawGameScreen() {
     //displayCupCake();
     ammoBarWidth = 150;
     drawAmmoBar();
+    startPowerUp();
     displayItemToChuck();
 }
 
@@ -401,6 +402,48 @@ function selectRandomItem() {
         itemToChuck = gingerBread;
     }
 
+}
+
+function selectRandomPowerUpItem() {
+    var rand = Math.floor(Math.random()* 10);
+    if(rand < 5){
+        powerUp = cupCake;
+    }
+    else if(rand > 5){
+        powerUp = gingerBread;
+    }
+
+}
+
+function startPowerUp() {
+    powerUpX = 900;
+    powerUpY = 100;
+    selectRandomPowerUpItem();
+    if(powerUp === cupCake){
+    cupCake = new createjs.Bitmap(queue.getResult('cupCake'));
+    powerUp = cupCake;
+    }
+    else if(powerUp === gingerBread){
+    gingerBread = new createjs.Bitmap(queue.getResult('gingerBread'));
+    powerUp = gingerBread;
+    }
+    powerUp.x = powerUpX;
+    powerUp.y = powerUpY;
+    stage.addChild(powerUp);
+}
+
+function movePowerUp() {
+    //var Xcoord = powerUpX;
+
+    if( powerUpX < -100 ){
+        direction = 5;
+    }
+    if(powerUpX > 850){
+        direction = -5;
+    }
+    powerUpX += direction;
+    powerUp.x = powerUpX;
+    powerUp.y = 100;
 }
 
 
@@ -690,9 +733,15 @@ function updateItemTossedMovement() {
 }
 
 function checkForCollision() {
+    var powerUpDetected = ndgmr.checkPixelCollision(powerUp, itemToChuck);
     var collision = ndgmr.checkPixelCollision(grumpyCat,itemToChuck);
     var easterCollision = ndgmr.checkRectCollision(easterHit,itemToChuck);
-         if( collision ){
+
+
+    if( powerUpDetected ) {
+            console.log("power up!!");
+    }
+    if( collision ){
             spriteX = 50;
             spriteY = 500;
             displayItemToChuck();
@@ -700,7 +749,7 @@ function checkForCollision() {
             score++;
             numberOfHits++;
 
-         }
+    }
     if(easterCollision){
         console.log("Hit easter egg!");
         spriteX = 50;
@@ -830,6 +879,7 @@ function loop() {
        case IN_GAME:
 
          drawScore();
+         movePowerUp();
          //moveBall();
          if(gameLevelNumber === 5 && numberOfHits === 3){
             drawWinScreen();
@@ -852,6 +902,7 @@ function loop() {
          //moveBall();
          updateTossedItem();
          checkForCollision();
+         movePowerUp();
          drawScore();
 
          break;
