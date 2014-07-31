@@ -434,16 +434,25 @@ function startPowerUp() {
 
 function movePowerUp() {
     //var Xcoord = powerUpX;
-
+    //powerUp.y = 100;
+    var rand;
     if( powerUpX < -100 ){
-        direction = 5;
+        direction = 6;
+        rand = Math.floor(Math.random()* 100);
+        powerUp.y = rand;
     }
     if(powerUpX > 850){
-        direction = -5;
+        direction = -6;
+        rand = Math.floor(Math.random()* 100);
+        powerUp.y = rand;
     }
     powerUpX += direction;
     powerUp.x = powerUpX;
-    powerUp.y = 100;
+}
+
+function changePowerUpYCoord() {
+    var rand = Math.floor(Math.random()* 100);
+    powerUpY = rand;
 }
 
 
@@ -739,7 +748,14 @@ function checkForCollision() {
 
 
     if( powerUpDetected ) {
-            console.log("power up!!");
+            
+            stage.removeChild(itemToChuck);
+            itemsToThrow += 2;
+            spriteX = 50;
+            spriteY = 500;
+            displayItemToChuck();
+            gameState = IN_GAME;
+            score++;
     }
     if( collision ){
             spriteX = 50;
