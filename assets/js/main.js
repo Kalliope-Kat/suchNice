@@ -292,7 +292,7 @@ fileManifest = [
                 {src:"img/WinScreen.png", id:"winScreen"},
                 {src:"img/GingerbreadMan.png", id:"gingerBread"},
 				{src:"img/PlayerBody.png", id:"playerBody"},
-				{src:"img/Aiming.png", id:"aiming"}
+				{src:"img/Aiming.png", id:"aiming"},
                 {src:"audio/splat.wav", id:"splat"}
     
             ];
