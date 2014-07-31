@@ -40,7 +40,7 @@ var ball;
 blockArray = [];
 
 var isDown = false;
-var shape;
+var shape, player, aimer, containShot, refPoint;
 
 
 
@@ -225,6 +225,7 @@ function drawGameScreen() {
     drawAmmoBar();
     startPowerUp();
     displayItemToChuck();
+	displayPlayer();
 }
 
 function drawGameOverScreen() {
@@ -286,7 +287,10 @@ fileManifest = [
                 {src:"GingerbreadMan.png", id:"gingerBread"},
                 {src:"easterHit.png", id:"easterHit"},
                 {src:"easterBackdrop.png", id:"easterBackdrop"}
-    
+                {src:"WinScreen.png", id:"winScreen"},
+                {src:"GingerbreadMan.png", id:"gingerBread"},
+				{src:"PlayerBody.png", id:"playerBody"},
+				{src:"Aiming.png", id:"aiming"}
     
             ];
 
@@ -331,6 +335,12 @@ function loadComplete(evt) {
     winScreen = new createjs.Bitmap(queue.getResult("winScreen"));
     easterHit = new createjs.Bitmap(queue.getResult("easterHit"));
     easterBackdrop = new createjs.Bitmap(queue.getResult("easterBackdrop"));
+	player = new createjs.Bitmap(queue.getResult("playerBody"));
+	aimer = new createjs.Bitmap(queue.getResult("aiming"));
+	refPoint = new createjs.Shape();
+	refPoint.graphics.beginFill("red").drawRoundRect(0,0,20,20,1);
+	containShot = new createjs.Container();
+	containShot.addChild(refPoint, aimer);
 
     var blockSheet = new createjs.SpriteSheet({
         images: [queue.getResult("mySprites")],
@@ -355,7 +365,7 @@ function loadComplete(evt) {
     handleButtonClick();
     initMouseCords();
     spriteX = 50;
-    spriteY = 500;
+    spriteY = 450;
     mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
     scoreText = new createjs.Text("Score: "+ score, "19px Arial Bold", "#253742"); 
     itemsText = new createjs.Text("Ammo: " + itemsToThrow, "19px Arial Bold", "#253742");
@@ -363,7 +373,7 @@ function loadComplete(evt) {
 	angleText = new createjs.Text("\u00B0", "19px Arial Bold", "#253742");
     drawScore();
     startLoop();
-    itemX = 100;
+    itemX = 50;
     itemY = 500;
     
     numberOfHits = 0;
@@ -384,13 +394,33 @@ function displayItemToChuck() {
     itemToChuck.x = spriteX;
     itemToChuck.y = spriteY;
     stage.addChild(itemToChuck);
+	stage.setChildIndex(itemToChuck, 1);
+	itemToChuck.visible = false;
+}
+
+var container;
+
+function displayPlayer()
+{
+	player.x = 40;
+	player.y = 500;
+	stage.addChild(player);
+	
+	aimer.x = 80;
+	aimer.y = 520;
+	aimer.regX = 72;
+	aimer.regY = 80;
+	stage.addChild(aimer);
+	
 }
 
 function displayNewItemToChuck() {
     selectRandomItem();
     itemToChuck.x = spriteX;
     itemToChuck.y = spriteY;
+	stage.setChildIndex(itemToChuck, 1);
     stage.addChild(itemToChuck);
+	itemToChuck.visible = false;
 }
 
 function selectRandomItem() {
@@ -478,7 +508,7 @@ function handleMouseRelease(event) {
 		stage.removeChild(shape);
 		stage.removeChild(powerText);
 		stage.removeChild(angleText);
-
+		itemToChuck.visible = true;
     }
 }
 
@@ -525,6 +555,21 @@ function handleMouseMove(event)
 		
 		powerText.text = "Power: " + userPower;
 		angleText.text = userAngle + "\u00B0";
+		
+		
+		if(userAngle <= 90)
+		{
+			aimer.setTransform(80,520,1,1,throwAngle,0,0,72,80);
+		}
+		else if(userAngle >90 && userAngle < 270)
+		{
+			aimer.setTransform(110,520,1,-1,throwAngle,0,0,72,80);
+		}
+		else if(userAngle > 270 && userAngle <= 360)
+		{
+			aimer.setTransform(80,520,1,1,throwAngle,0,0,72,80);
+		}
+		console.log(aimer.x + ", " + aimer.y);
 		
 		powerText.x = mouseX + 5;
 		powerText.y = mouseY + 40;
@@ -730,8 +775,8 @@ function updateItemTossedMovement() {
     if( mouseDragDistance * 0.1 > 30) {
         mouseDragDistance = 295;
     }
-    var spriteXmod = ((mouseDragDistance*0.1)*Math.cos(radians));
-    var spriteYmod = ((mouseDragDistance*0.1)*Math.sin(radians));
+    var spriteXmod = (((mouseDragDistance*0.1)+8)*Math.cos(radians));
+    var spriteYmod = (((mouseDragDistance*0.1)+2)*Math.sin(radians));
 
     spriteX += spriteXmod;
     spriteY += spriteYmod;
@@ -759,7 +804,7 @@ function checkForCollision() {
     }
     if( collision ){
             spriteX = 50;
-            spriteY = 500;
+            spriteY = 450;
             displayItemToChuck();
             gameState = IN_GAME;
             score++;
@@ -782,13 +827,13 @@ function checkForCollision() {
     }
          if ( itemToChuck.y + 45 >= canvas.height ) {
             spriteX = 50;
-            spriteY = 500;
+            spriteY = 450;
             displayItemToChuck();
             gameState = IN_GAME;
          }
          if ( itemToChuck.x + 50 >= canvas.width || itemToChuck.x < 0){
             spriteX = 50;
-            spriteY = 500;
+            spriteY = 450;
             displayItemToChuck();
             gameState = IN_GAME;
            } 
