@@ -286,7 +286,7 @@ fileManifest = [
                 {src:"win_revised.png", id:"winScreen"},
                 {src:"GingerbreadMan.png", id:"gingerBread"},
                 {src:"easterHit.png", id:"easterHit"},
-                {src:"easterBackdrop.png", id:"easterBackdrop"}
+                {src:"easterBackdrop.png", id:"easterBackdrop"},
                 {src:"WinScreen.png", id:"winScreen"},
                 {src:"GingerbreadMan.png", id:"gingerBread"},
 				{src:"PlayerBody.png", id:"playerBody"},
