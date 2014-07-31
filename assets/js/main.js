@@ -394,7 +394,7 @@ function displayItemToChuck() {
     itemToChuck.x = spriteX;
     itemToChuck.y = spriteY;
     stage.addChild(itemToChuck);
-	stage.setChildIndex(itemToChuck, 1);
+	stage.setChildIndex(itemToChuck, 2);
 	itemToChuck.visible = false;
 }
 
@@ -418,7 +418,7 @@ function displayNewItemToChuck() {
     selectRandomItem();
     itemToChuck.x = spriteX;
     itemToChuck.y = spriteY;
-	stage.setChildIndex(itemToChuck, 1);
+	stage.setChildIndex(itemToChuck, 2);
     stage.addChild(itemToChuck);
 	itemToChuck.visible = false;
 }
@@ -816,6 +816,7 @@ function checkForCollision() {
         spriteX = 50;
         spriteY = 500;
         stage.addChild(easterBackdrop);
+		stage.setChildIndex(easterBackdrop,1);
         grumpyCat.x = 590;
         grumpyCat.y = 410;
         stage.addChild(grumpyCat);
