@@ -69,7 +69,7 @@ function drawTitleScreen() {
     instructionsButton.y = 500;
 
     stage.addChild(titleScreen);
-    stage.addChild(text);
+//    stage.addChild(text);
     stage.addChild(startButton);
     stage.addChild(instructionsButton);
     
@@ -194,7 +194,7 @@ function drawInstructionsScreen() {
 
 
     stage.addChild(instructionsScreen);
-    stage.addChild(text);
+//    stage.addChild(text);
     stage.addChild(text2);
     stage.addChild(text3);
     stage.addChild(text4);
@@ -247,7 +247,7 @@ function drawGameOverScreen() {
 
 
     stage.addChild(gameOverScreen);
-    stage.addChild(text);
+//    stage.addChild(text);
     stage.addChild(finalScoreText);
     stage.addChild(restartButton);
 }
@@ -271,18 +271,18 @@ function drawWinScreen() {
 }
 
 fileManifest = [
-                {src:"titleScreen.jpg", id:"titleScreen"},
-                {src:"instructionsScreen.jpg", id:"instructionsScreen"},
+                {src:"title_revised.png", id:"titleScreen"},
+                {src:"instructions_revised.png", id:"instructionsScreen"},
                 {src:"startButton.jpg", id:"startButton"},
                 {src:"instructionsButton.jpg", id:"instructionsButton"},
                 {src:"restartButton.jpg", id:"restartButton"},
                 {src:"gameScreen.jpg", id:"gameScreen"},
-                {src:"gameOverScreen.jpg", id:'gameOverScreen'},
+                {src:"gameOver_revised.png", id:'gameOverScreen'},
                 {src:"sprites.png", id:"mySprites"},
                 {src:"gameBackdrop.png", id:"backDrop1"},
                 {src:"grumpyCat3.png", id:"grumpyCat"},
                 {src:"tempCupCake.png", id:"cupCake"},
-                {src:"WinScreen.png", id:"winScreen"},
+                {src:"win_revised.png", id:"winScreen"},
                 {src:"GingerbreadMan.png", id:"gingerBread"},
                 {src:"easterHit.png", id:"easterHit"},
                 {src:"easterBackdrop.png", id:"easterBackdrop"}
@@ -774,6 +774,8 @@ function checkForCollision() {
         grumpyCat.x = 590;
         grumpyCat.y = 410;
         stage.addChild(grumpyCat);
+        stage.removeChild(powerUp);
+        startPowerUp();
         drawAmmoBar();
         displayItemToChuck();
         gameState = IN_GAME;
