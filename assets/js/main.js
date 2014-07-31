@@ -29,6 +29,8 @@ var itemToChuck, powerUp, cupCake, gingerBread;
 
 var walkingDirection;
 
+var splat;
+
 var gameOver, timeLimit = 120;
 
 var jamieMode, paused, ammoBar, ammoBarWidth;
@@ -272,31 +274,33 @@ function drawWinScreen() {
 }
 
 fileManifest = [
-                {src:"title_revised.png", id:"titleScreen"},
-                {src:"instructions_revised.png", id:"instructionsScreen"},
-                {src:"startButton.jpg", id:"startButton"},
-                {src:"instructionsButton.jpg", id:"instructionsButton"},
-                {src:"restartButton.jpg", id:"restartButton"},
-                {src:"gameScreen.jpg", id:"gameScreen"},
-                {src:"gameOver_revised.png", id:'gameOverScreen'},
-                {src:"sprites.png", id:"mySprites"},
-                {src:"gameBackdrop.png", id:"backDrop1"},
-                {src:"grumpyCat3.png", id:"grumpyCat"},
-                {src:"tempCupCake.png", id:"cupCake"},
-                {src:"win_revised.png", id:"winScreen"},
-                {src:"GingerbreadMan.png", id:"gingerBread"},
-                {src:"easterHit.png", id:"easterHit"},
-                {src:"easterBackdrop.png", id:"easterBackdrop"},
-                {src:"WinScreen.png", id:"winScreen"},
-                {src:"GingerbreadMan.png", id:"gingerBread"},
-				{src:"PlayerBody.png", id:"playerBody"},
-				{src:"Aiming.png", id:"aiming"}
+                {src:"img/title_revised.png", id:"titleScreen"},
+                {src:"img/instructions_revised.png", id:"instructionsScreen"},
+                {src:"img/startButton.jpg", id:"startButton"},
+                {src:"img/instructionsButton.jpg", id:"instructionsButton"},
+                {src:"img/restartButton.jpg", id:"restartButton"},
+                {src:"img/gameScreen.jpg", id:"gameScreen"},
+                {src:"img/gameOver_revised.png", id:'gameOverScreen'},
+                {src:"img/sprites.png", id:"mySprites"},
+                {src:"img/gameBackdrop.png", id:"backDrop1"},
+                {src:"img/grumpyCat3.png", id:"grumpyCat"},
+                {src:"img/tempCupCake.png", id:"cupCake"},
+                {src:"img/win_revised.png", id:"winScreen"},
+                {src:"img/GingerbreadMan.png", id:"gingerBread"},
+                {src:"img/easterHit.png", id:"easterHit"},
+                {src:"img/easterBackdrop.png", id:"easterBackdrop"},
+                {src:"img/WinScreen.png", id:"winScreen"},
+                {src:"img/GingerbreadMan.png", id:"gingerBread"},
+				{src:"img/PlayerBody.png", id:"playerBody"},
+				{src:"img/Aiming.png", id:"aiming"}
+                {src:"audio/splat.wav", id:"splat"}
     
             ];
 
 function loadFiles() {
-    queue = new createjs.LoadQueue(true, "assets/img/");
+    queue = new createjs.LoadQueue(true, "assets/");
     queue.on("complete", loadComplete, this);
+    queue.installPlugin(createjs.Sound);
     queue.loadManifest(fileManifest);
 }
 
@@ -795,18 +799,21 @@ function checkForCollision() {
     if( powerUpDetected ) {
             
             stage.removeChild(itemToChuck);
+            createjs.Sound.play('splat');
             itemsToThrow += 2;
             spriteX = 50;
             spriteY = 500;
             displayItemToChuck();
             gameState = IN_GAME;
             score++;
+            upDateAmmoBar();
     }
     if( collision ){
             spriteX = 50;
             spriteY = 450;
             displayItemToChuck();
             gameState = IN_GAME;
+            createjs.Sound.play('splat');
             score++;
             numberOfHits++;
 
@@ -827,12 +834,14 @@ function checkForCollision() {
         gameState = IN_GAME;
     }
          if ( itemToChuck.y + 45 >= canvas.height ) {
+            createjs.Sound.play('splat');
             spriteX = 50;
             spriteY = 450;
             displayItemToChuck();
             gameState = IN_GAME;
          }
          if ( itemToChuck.x + 50 >= canvas.width || itemToChuck.x < 0){
+            createjs.Sound.play('splat');
             spriteX = 50;
             spriteY = 450;
             displayItemToChuck();
