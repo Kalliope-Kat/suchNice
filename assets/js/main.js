@@ -25,11 +25,11 @@ var powerText, angleText, userAngle, userPower;
 
 var walk, blocks, blockArray, spriteX, spriteY, powerUpX, powerUpY;
 
-var itemToChuck, powerUp, cupCake, gingerBread;
+var itemToChuck, powerUp, cupCake, gingerBread, powerUpSpeed;
 
 var walkingDirection;
 
-var splat;
+var splat, isMuted;
 
 var gameOver, timeLimit = 120;
 
@@ -220,7 +220,6 @@ function drawGameScreen() {
     easterHit.x = 0;
     easterHit.y = 5;
     stage.addChild(easterHit);
-    console.log("easter egg added to screen");
     //displaySprites();
     //displayCupCake();
     ammoBarWidth = 150;
@@ -293,7 +292,11 @@ fileManifest = [
                 {src:"img/GingerbreadMan.png", id:"gingerBread"},
 				{src:"img/PlayerBody.png", id:"playerBody"},
 				{src:"img/Aiming.png", id:"aiming"},
-                {src:"audio/splat.wav", id:"splat"}
+                {src:"audio/splat.wav", id:"splat"},
+                {src:"audio/launch.wav", id:"launch"},
+                {src:"audio/GeorgeStreet.mp3", id:"georgeStreet"},
+
+
     
             ];
 
@@ -307,6 +310,7 @@ function loadFiles() {
 function handleButtonClick() {
     startButton.addEventListener("click", function (event){ 
         gameState = CREATE_GAME;
+        createjs.Sound.play('georgeStreet', {loop: -1});
     });
 
     instructionsButton.addEventListener("click", function (event){
@@ -315,12 +319,15 @@ function handleButtonClick() {
 
     restartButton.addEventListener("click", function (event){
             resetGame();
+            createjs.Sound.stop('georgeStreet');
+            createjs.Sound.play('georgeStreet');
             gameOver = false;
             jamieMode = false;
             gameState = CREATE_GAME;
             itemsToThrow = LVL1;
             gameLevelNumber = 1;
             score = 0;
+            powerUpSpeed = 6;
         });
 }
 
@@ -379,8 +386,11 @@ function loadComplete(evt) {
     startLoop();
     itemX = 50;
     itemY = 500;
-    
+    powerUpSpeed = 6;
     numberOfHits = 0;
+    throwAngle = 0.01;
+    mouseDragDistance = 5;
+    gravityY = 1;
 }
 
 
@@ -471,12 +481,12 @@ function movePowerUp() {
     //powerUp.y = 100;
     var rand;
     if( powerUpX < -100 ){
-        direction = 6;
+        direction = powerUpSpeed;
         rand = Math.floor(Math.random()* 100);
         powerUp.y = rand;
     }
     if(powerUpX > 850){
-        direction = -6;
+        direction = powerUpSpeed * -1;
         rand = Math.floor(Math.random()* 100);
         powerUp.y = rand;
     }
@@ -503,7 +513,8 @@ function handleMouseRelease(event) {
     if(gameState === IN_GAME){
         endXposition = mouseX;
         endYposition = mouseY;
-        
+
+        createjs.Sound.play('launch');
         updateItemTossedMovement();
         gameState = THROWING_ITEM;
         itemsToThrow--;
@@ -532,9 +543,12 @@ function calcAnglePower(mouseX, mouseY)
 		dy *= dy;
         dx *= dx;
         mouseDragDistance = Math.sqrt(dx + dy);
-        gravityY = 0;
+        gravityY = 1;
 
 		mouseDragDistance = Math.floor(mouseDragDistance);
+        if(typeof mouseDragDistance === 'undefined'){
+            mouseDragDistance = 5;
+        }
 		displayShotInfo();
 }
 
@@ -573,7 +587,6 @@ function handleMouseMove(event)
 		{
 			aimer.setTransform(80,520,1,1,throwAngle,0,0,72,80);
 		}
-		console.log(aimer.x + ", " + aimer.y);
 		
 		powerText.x = mouseX + 5;
 		powerText.y = mouseY + 40;
@@ -616,21 +629,14 @@ function handleKeyDown(event) {
     if(!gameOver) {
     switch(event.keyCode) {
         case 38:
-            console.log("Up");
             break;
         case 37:
-            console.log("Left");
-            walkingDirection = "walkLeft";
-            score--;
             break;
         case 39:
-            console.log("Right");
-            walkingDirection = "walkRight";
-            score++;
             break;
         case 40:
-            console.log("Down");
             break;
+
     }
 }
 
@@ -674,8 +680,17 @@ function handleKeyUp(event) {
             }
             upDateAmmoBar();
             break;
+        case 77:
+            if(isMuted){
+                isMuted = false;
+                createjs.Sound.setMute(false);
+            } else {
+                isMuted = true;
+                createjs.Sound.setMute(true);
+            }
+            break;
+
         case 80:
-            console.log("Pause Pressed");
             if(paused){
                 paused = false;
                 gameState = IN_GAME;
@@ -773,20 +788,20 @@ function updateTossedItem() {
 
 function updateItemTossedMovement() {
 
-    var previousXLocation = spriteX;
-    var previousYLocation = spriteY;
+
     var radians = throwAngle * DEGTORAD;
     if( mouseDragDistance * 0.1 > 30) {
         mouseDragDistance = 295;
     }
+    
+
     var spriteXmod = (((mouseDragDistance*0.1)+8)*Math.cos(radians));
     var spriteYmod = (((mouseDragDistance*0.1)+2)*Math.sin(radians));
-
     spriteX += spriteXmod;
     spriteY += spriteYmod;
         
     spriteY += gravityY;
-    gravityY += 0.7;
+    gravityY += 0.9;
 
 }
 
@@ -802,11 +817,12 @@ function checkForCollision() {
             createjs.Sound.play('splat');
             itemsToThrow += 2;
             spriteX = 50;
-            spriteY = 500;
+            spriteY = 450;
             displayItemToChuck();
             gameState = IN_GAME;
             score++;
             upDateAmmoBar();
+            powerUpSpeed++;
     }
     if( collision ){
             spriteX = 50;
@@ -819,9 +835,8 @@ function checkForCollision() {
 
     }
     if(easterCollision){
-        console.log("Hit easter egg!");
         spriteX = 50;
-        spriteY = 500;
+        spriteY = 450;
         stage.addChild(easterBackdrop);
 		stage.setChildIndex(easterBackdrop,1);
         grumpyCat.x = 590;
@@ -863,6 +878,7 @@ function resetGame() {
 function goToNextLevel() {
     numberOfHits = 0;
     gameLevelNumber++;
+    powerUpSpeed++;
     switch(gameLevelNumber){
         case 1:
             itemsToThrow = LVL1;
