@@ -23,9 +23,9 @@ var mouseX, mouseY, mousePositionText;
 
 var powerText, angleText, userAngle, userPower;
 
-var walk, blocks, blockArray, spriteX, spriteY, powerUpX, powerUpY;
+var walk, blocks, blockArray, spriteX, spriteY, powerUpX, powerUpY, movingWalkerX, movingWalkerY, direction, walkerDirection;
 
-var itemToChuck, powerUp, cupCake, gingerBread, powerUpSpeed;
+var itemToChuck, powerUp, cupCake, gingerBread, powerUpSpeed, walker, movingWalker, itemSpeedFactor;
 
 var walkingDirection;
 
@@ -43,8 +43,6 @@ blockArray = [];
 
 var isDown = false;
 var shape, player, aimer, containShot, refPoint;
-
-
 
 function openCanvas() {
     
@@ -77,23 +75,13 @@ function drawTitleScreen() {
     
 }
 
-function displaySprites() {
-    walk.x=spriteX;
-    walk.y=spriteY;
-    walk.gotoAndPlay(walkingDirection);
-    stage.addChild(walk);
-    
-    // for(i = 0; i < 5; i++){
-    //     blocks.x=i*31+20;
-    //     blocks.y=215;
-    //     blocks.gotoAndStop(i);
-    //     blockArray.push(blocks.clone());
-    // }
-    // for(j = 0; j < 5; j++){
-    //     stage.addChild(blockArray[j]);  
-    // }
-    
-}
+// function displaySprites() {
+//     walk.x=spriteX;
+//     walk.y=spriteY;
+//     walk.gotoAndPlay(walkingDirection);
+//     stage.addChild(walk);
+        
+// }
 
 function drawAmmoBar() {
     var text = new createjs.Text("Ammo", "18px Arial", "#DDD"); 
@@ -150,25 +138,25 @@ function upDateAmmoBar() {
 
 
 
-function drawNewSprite() {
-    var walkSheet = new createjs.SpriteSheet({
-        images: [queue.getResult("mySprites")],
-        frames: [[160,0,19,49,0,10.05,48.6],[179,0,34,44,0,17.05,43.6],[213,0,22,46,0,9.05,45.6],[235,0,17,49,0,8.05,48.6],[0,49,25,49,0,10.05,48.6],[25,49,31,46,0,14.05,45.6],[56,49,33,44,0,16.05,43.6],[89,49,30,44,0,17.05,43.6],[119,49,28,46,0,17.05,45.6],[147,49,19,49,0,10.05,48.6],[166,49,23,49,0,14.05,48.6],[189,49,31,46,0,16.05,45.6],[220,49,34,44,0,17.05,43.6],[0,98,19,49,0,9.05,48.6],[19,98,34,44,0,17.05,43.6],[53,98,22,46,0,13.05,45.6],[75,98,17,49,0,9.05,48.6],[92,98,25,49,0,15.05,48.6],[117,98,31,46,0,17.05,45.6],[148,98,33,44,0,17.05,43.6],[181,98,30,44,0,13.05,43.6],[211,98,28,46,0,11.05,45.6],[0,147,19,49,0,9.05,48.6],[19,147,23,49,0,9.05,48.6],[42,147,31,46,0,15.05,45.6],[73,147,34,44,0,17.05,43.6]],
-        animations: {
-            standRight: [0, 0, "standRight"],
-            walkRight: [1, 12, "walkRight", 0.5],
-            standLeft: [13, 13, "standLeft"],
-            walkLeft: [14, 25, "walkLeft", 0.5]
-            }     
-        });
+// function drawNewSprite() {
+//     var walkSheet = new createjs.SpriteSheet({
+//         images: [queue.getResult("mySprites")],
+//         frames: [[160,0,19,49,0,10.05,48.6],[179,0,34,44,0,17.05,43.6],[213,0,22,46,0,9.05,45.6],[235,0,17,49,0,8.05,48.6],[0,49,25,49,0,10.05,48.6],[25,49,31,46,0,14.05,45.6],[56,49,33,44,0,16.05,43.6],[89,49,30,44,0,17.05,43.6],[119,49,28,46,0,17.05,45.6],[147,49,19,49,0,10.05,48.6],[166,49,23,49,0,14.05,48.6],[189,49,31,46,0,16.05,45.6],[220,49,34,44,0,17.05,43.6],[0,98,19,49,0,9.05,48.6],[19,98,34,44,0,17.05,43.6],[53,98,22,46,0,13.05,45.6],[75,98,17,49,0,9.05,48.6],[92,98,25,49,0,15.05,48.6],[117,98,31,46,0,17.05,45.6],[148,98,33,44,0,17.05,43.6],[181,98,30,44,0,13.05,43.6],[211,98,28,46,0,11.05,45.6],[0,147,19,49,0,9.05,48.6],[19,147,23,49,0,9.05,48.6],[42,147,31,46,0,15.05,45.6],[73,147,34,44,0,17.05,43.6]],
+//         animations: {
+//             standRight: [0, 0, "standRight"],
+//             walkRight: [1, 12, "walkRight", 0.5],
+//             standLeft: [13, 13, "standLeft"],
+//             walkLeft: [14, 25, "walkLeft", 0.5]
+//             }     
+//         });
     
-    walk = new createjs.Sprite(walkSheet);
+//     walk = new createjs.Sprite(walkSheet);
 
-    // walk.x=spriteX;
-    // walk.y=spriteY;
-    // walk.gotoAndPlay(walkingDirection);
-    // stage.addChild(walk);
-}
+//     // walk.x=spriteX;
+//     // walk.y=spriteY;
+//     // walk.gotoAndPlay(walkingDirection);
+//     // stage.addChild(walk);
+// }
 
 function drawInstructionsScreen() {
     stage.removeAllChildren();
@@ -210,8 +198,9 @@ function drawGameScreen() {
 
 
     stage.addChild(backDrop1);
-    
-    
+    if(gameLevelNumber > 1) {
+        drawWalker();
+    }
 
     grumpyCat.x = 590;
     grumpyCat.y = 410;
@@ -225,8 +214,12 @@ function drawGameScreen() {
     ammoBarWidth = 150;
     drawAmmoBar();
     startPowerUp();
+    startMovingWalker();
     displayItemToChuck();
 	displayPlayer();
+    if(gameLevelNumber === 5){
+        movingWalker.visible = true;
+    }
 }
 
 function drawGameOverScreen() {
@@ -292,6 +285,7 @@ fileManifest = [
                 {src:"img/GingerbreadMan.png", id:"gingerBread"},
 				{src:"img/PlayerBody.png", id:"playerBody"},
 				{src:"img/Aiming.png", id:"aiming"},
+                {src:"img/walker.png", id:'walker'},
                 {src:"audio/splat.wav", id:"splat"},
                 {src:"audio/launch.wav", id:"launch"},
                 {src:"audio/GeorgeStreet.mp3", id:"georgeStreet"},
@@ -348,36 +342,37 @@ function loadComplete(evt) {
     easterBackdrop = new createjs.Bitmap(queue.getResult("easterBackdrop"));
 	player = new createjs.Bitmap(queue.getResult("playerBody"));
 	aimer = new createjs.Bitmap(queue.getResult("aiming"));
+    walker = new createjs.Bitmap(queue.getResult("walker"));
 	refPoint = new createjs.Shape();
 	refPoint.graphics.beginFill("red").drawRoundRect(0,0,20,20,1);
 	containShot = new createjs.Container();
 	containShot.addChild(refPoint, aimer);
 
-    var blockSheet = new createjs.SpriteSheet({
-        images: [queue.getResult("mySprites")],
-        frames: [[0,0,32,32,0,16,16],[32,0,32,32,0,16,16],[64,0,32,32,0,16,16],[96,0,32,32,0,16,16],[128,0,32,32,0,16,16]]
-        });
+    // var blockSheet = new createjs.SpriteSheet({
+    //     images: [queue.getResult("mySprites")],
+    //     frames: [[0,0,32,32,0,16,16],[32,0,32,32,0,16,16],[64,0,32,32,0,16,16],[96,0,32,32,0,16,16],[128,0,32,32,0,16,16]]
+    //     });
 
-    blocks = new createjs.Sprite(blockSheet);
+    // blocks = new createjs.Sprite(blockSheet);
 
-    var walkSheet = new createjs.SpriteSheet({
-        images: [queue.getResult("mySprites")],
-        frames: [[160,0,19,49,0,10.05,48.6],[179,0,34,44,0,17.05,43.6],[213,0,22,46,0,9.05,45.6],[235,0,17,49,0,8.05,48.6],[0,49,25,49,0,10.05,48.6],[25,49,31,46,0,14.05,45.6],[56,49,33,44,0,16.05,43.6],[89,49,30,44,0,17.05,43.6],[119,49,28,46,0,17.05,45.6],[147,49,19,49,0,10.05,48.6],[166,49,23,49,0,14.05,48.6],[189,49,31,46,0,16.05,45.6],[220,49,34,44,0,17.05,43.6],[0,98,19,49,0,9.05,48.6],[19,98,34,44,0,17.05,43.6],[53,98,22,46,0,13.05,45.6],[75,98,17,49,0,9.05,48.6],[92,98,25,49,0,15.05,48.6],[117,98,31,46,0,17.05,45.6],[148,98,33,44,0,17.05,43.6],[181,98,30,44,0,13.05,43.6],[211,98,28,46,0,11.05,45.6],[0,147,19,49,0,9.05,48.6],[19,147,23,49,0,9.05,48.6],[42,147,31,46,0,15.05,45.6],[73,147,34,44,0,17.05,43.6]],
-        animations: {
-            standRight: [0, 0, "standRight"],
-            walkRight: [1, 12, "walkRight", 0.5],
-            standLeft: [13, 13, "standLeft"],
-            walkLeft: [14, 25, "walkLeft", 0.5]
-            }     
-        });
+    // var walkSheet = new createjs.SpriteSheet({
+    //     images: [queue.getResult("mySprites")],
+    //     frames: [[160,0,19,49,0,10.05,48.6],[179,0,34,44,0,17.05,43.6],[213,0,22,46,0,9.05,45.6],[235,0,17,49,0,8.05,48.6],[0,49,25,49,0,10.05,48.6],[25,49,31,46,0,14.05,45.6],[56,49,33,44,0,16.05,43.6],[89,49,30,44,0,17.05,43.6],[119,49,28,46,0,17.05,45.6],[147,49,19,49,0,10.05,48.6],[166,49,23,49,0,14.05,48.6],[189,49,31,46,0,16.05,45.6],[220,49,34,44,0,17.05,43.6],[0,98,19,49,0,9.05,48.6],[19,98,34,44,0,17.05,43.6],[53,98,22,46,0,13.05,45.6],[75,98,17,49,0,9.05,48.6],[92,98,25,49,0,15.05,48.6],[117,98,31,46,0,17.05,45.6],[148,98,33,44,0,17.05,43.6],[181,98,30,44,0,13.05,43.6],[211,98,28,46,0,11.05,45.6],[0,147,19,49,0,9.05,48.6],[19,147,23,49,0,9.05,48.6],[42,147,31,46,0,15.05,45.6],[73,147,34,44,0,17.05,43.6]],
+    //     animations: {
+    //         standRight: [0, 0, "standRight"],
+    //         walkRight: [1, 12, "walkRight", 0.5],
+    //         standLeft: [13, 13, "standLeft"],
+    //         walkLeft: [14, 25, "walkLeft", 0.5]
+    //         }     
+    //     });
     
-    walk = new createjs.Sprite(walkSheet);
+    // walk = new createjs.Sprite(walkSheet);
 
     handleButtonClick();
     initMouseCords();
     spriteX = 50;
     spriteY = 450;
-    mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
+    // mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
     scoreText = new createjs.Text("Score: "+ score, "19px Arial Bold", "#253742"); 
     itemsText = new createjs.Text("Ammo: " + itemsToThrow, "19px Arial Bold", "#253742");
 	powerText = new createjs.Text("Power: ", "19px Arial Bold", "#253742");
@@ -391,6 +386,9 @@ function loadComplete(evt) {
     throwAngle = 0.01;
     mouseDragDistance = 5;
     gravityY = 1;
+    itemSpeedFactor = 0.1;
+    walkerX = 360;
+    walkerY = 440;
 }
 
 
@@ -614,7 +612,7 @@ function init() {
     loadFiles();
     gameOver = false;
     jamieMode = false;
-    walkingDirection = "walkRight";
+    //walkingDirection = "walkRight";
     
 
     document.onkeydown = handleKeyDown;
@@ -763,22 +761,22 @@ function drawLevelSign() {
             stage.addChild(levelContainer);
 }
 
-function drawBall() {
-        ball = new createjs.Shape();
-        ball.graphics.setStrokeStyle(1);
-        ball.graphics.beginStroke('#00F');
-        ball.graphics.beginFill("#00F").drawCircle(0,0,10);
-        ball.x = itemX;
-        ball.y = itemY;
+// function drawBall() {
+//         ball = new createjs.Shape();
+//         ball.graphics.setStrokeStyle(1);
+//         ball.graphics.beginStroke('#00F');
+//         ball.graphics.beginFill("#00F").drawCircle(0,0,10);
+//         ball.x = itemX;
+//         ball.y = itemY;
 
-        stage.addChild(ball);
-}
+//         stage.addChild(ball);
+// }
 
-function moveBall() {
-    updateItemMovement();
-    ball.x = itemX;
-    ball.y = itemY;
-}
+// function moveBall() {
+//     updateItemMovement();
+//     ball.x = itemX;
+//     ball.y = itemY;
+// }
 
 function updateTossedItem() {
     updateItemTossedMovement();
@@ -793,15 +791,14 @@ function updateItemTossedMovement() {
     if( mouseDragDistance * 0.1 > 30) {
         mouseDragDistance = 295;
     }
-    
 
-    var spriteXmod = (((mouseDragDistance*0.1)+8)*Math.cos(radians));
-    var spriteYmod = (((mouseDragDistance*0.1)+2)*Math.sin(radians));
+    var spriteXmod = (((mouseDragDistance*itemSpeedFactor)+8)*Math.cos(radians));
+    var spriteYmod = (((mouseDragDistance*itemSpeedFactor)+12)*Math.sin(radians));
     spriteX += spriteXmod;
     spriteY += spriteYmod;
         
     spriteY += gravityY;
-    gravityY += 0.9;
+    gravityY += 1;
 
 }
 
@@ -809,7 +806,27 @@ function checkForCollision() {
     var powerUpDetected = ndgmr.checkPixelCollision(powerUp, itemToChuck);
     var collision = ndgmr.checkPixelCollision(grumpyCat,itemToChuck);
     var easterCollision = ndgmr.checkRectCollision(easterHit,itemToChuck);
+    var walkerCollision = ndgmr.checkPixelCollision(walker, itemToChuck);
+    var movingWalkerCollision = ndgmr.checkPixelCollision(movingWalker, itemToChuck);
 
+
+    if (walkerCollision) {
+        score--;
+        displayItemToChuck();
+        createjs.Sound.play('splat');
+        spriteX = 50;
+        spriteY = 450;
+        gameState = IN_GAME;
+    }
+
+     if (movingWalkerCollision && gameLevelNumber ===5) {
+        score--;
+        displayItemToChuck();
+        createjs.Sound.play('splat');
+        spriteX = 50;
+        spriteY = 450;
+        gameState = IN_GAME;
+    }
 
     if( powerUpDetected ) {
             
@@ -823,6 +840,7 @@ function checkForCollision() {
             score++;
             upDateAmmoBar();
             powerUpSpeed++;
+            itemSpeedFactor += 0.003333;
     }
     if( collision ){
             spriteX = 50;
@@ -866,6 +884,41 @@ function checkForCollision() {
            
 }
 
+function drawWalker() {
+    walker.x = walkerX;
+    walker.y = walkerY;
+    stage.addChild(walker);
+}
+
+function startMovingWalker() {
+    movingWalkerX = 400;
+    movingWalkerY = 600;
+    movingWalker = new createjs.Bitmap(queue.getResult('walker'));
+    movingWalker.x = movingWalkerX;
+    movingWalker.y = movingWalkerY;
+    stage.addChild(movingWalker);
+    movingWalker.visible = false;
+}
+
+function moveMovingWalker() {
+    //var Xcoord = powerUpX;
+    //powerUp.y = 100;
+    var movingWalkerSpeed = 7;
+    var rand;
+    if( movingWalkerY < 20 ){
+        walkerDirection = movingWalkerSpeed;
+        rand = Math.floor(Math.random()* 100);
+        movingWalker.y = rand;
+    }
+    if(movingWalkerY > 320){
+        walkerDirection = movingWalkerSpeed * -1;
+        rand = Math.floor(Math.random()* 100);
+        movingWalker.y = rand;
+    }
+    movingWalkerY += walkerDirection;
+    movingWalker.y = movingWalkerY;
+}
+
 
 function resetGame() {
     score = 0;
@@ -878,19 +931,26 @@ function resetGame() {
 function goToNextLevel() {
     numberOfHits = 0;
     gameLevelNumber++;
-    powerUpSpeed++;
+    powerUpSpeed += 2;
+    itemSpeedFactor += 0.01;
     switch(gameLevelNumber){
         case 1:
             itemsToThrow = LVL1;
+
             break;
         case 2:
             itemsToThrow = LVL2;
+
             break;
         case 3:
             itemsToThrow = LVL3;
+            walkerX = 340;
+            walkerY = 410;
             break;
         case 4:
             itemsToThrow = LVL4;
+            walkerX = 310;
+            walkerY = 370;
             break;
         case 5:
             itemsToThrow = LVL5;
@@ -905,33 +965,33 @@ function resetThrowItem() {
     drawBall();
 }
 
-function startGame() {
-    score = 0;
-}
+// function startGame() {
+//     score = 0;
+// }
 
 function startLoop() {
     createjs.Ticker.addEventListener("tick", loop);
     createjs.Ticker.setFPS(FPS);
 }
 
-function updateItemMovement() {
+// function updateItemMovement() {
 
-    var previousXLocation = itemX;
-    var previousYLocation = itemY;
-    var radians = throwAngle * DEGTORAD;
-    var itemXmod = ((mouseDragDistance*.1)*Math.cos(radians));
-    var itemYmod = ((mouseDragDistance*.1)*Math.sin(radians));
+//     var previousXLocation = itemX;
+//     var previousYLocation = itemY;
+//     var radians = throwAngle * DEGTORAD;
+//     var itemXmod = ((mouseDragDistance*.4)*Math.cos(radians));
+//     var itemYmod = ((mouseDragDistance*.4)*Math.sin(radians));
     
 
-    itemX += itemXmod;
-    itemY += itemYmod;
+//     itemX += itemXmod;
+//     itemY += itemYmod;
    
     
-    itemY += gravityY;
-    gravityY += 0.5;
+//     itemY += gravityY;
+//     gravityY += 0.5;
 
 
-}
+// }
 
 
 function main() {
@@ -969,6 +1029,7 @@ function loop() {
 
          drawScore();
          movePowerUp();
+         moveMovingWalker();
          //moveBall();
          if(gameLevelNumber === 5 && numberOfHits === 3){
             drawWinScreen();
@@ -979,7 +1040,7 @@ function loop() {
          if(numberOfHits === 3){
             goToNextLevel();
          }
-         if(itemsToThrow === 0 || itemsToThrow < 3 - numberOfHits) {
+         if(itemsToThrow === 0) {
 
             gameState = GAME_OVER;
             gameOver = true;
@@ -992,6 +1053,7 @@ function loop() {
          updateTossedItem();
          checkForCollision();
          movePowerUp();
+         moveMovingWalker();
          drawScore();
 
          break;
