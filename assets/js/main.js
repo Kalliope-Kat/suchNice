@@ -313,6 +313,7 @@ function handleButtonClick() {
 
     restartButton.addEventListener("click", function (event){
             resetGame();
+
             createjs.Sound.stop('georgeStreet');
             createjs.Sound.play('georgeStreet');
             gameOver = false;
@@ -322,6 +323,7 @@ function handleButtonClick() {
             gameLevelNumber = 1;
             score = 0;
             powerUpSpeed = 6;
+            stage.removeChild(walker);
         });
 }
 
@@ -810,7 +812,7 @@ function checkForCollision() {
     var movingWalkerCollision = ndgmr.checkPixelCollision(movingWalker, itemToChuck);
 
 
-    if (walkerCollision) {
+    if (walkerCollision && gameLevelNumber !== 1) {
         score--;
         displayItemToChuck();
         createjs.Sound.play('splat');
@@ -924,6 +926,7 @@ function resetGame() {
     score = 0;
 	numberOfHits = 0;
     gameLevelNumber = 1;
+    stage.removeChild(walker);
 }
 
 
