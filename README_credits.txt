@@ -1,3 +1,8 @@
+Jared Perkins - Code
+Kaitlynn Kruse - Code
+Zach O'Sullivan - Bug fixes/art
+Christian Ramon - Bug fixes/art
+
 ‘Spear throw’ Recorded by Mike Koenig Soundbible.com
 ‘Splat and Squirt’ Recorded by MIke Koenig soundbible.com
 
