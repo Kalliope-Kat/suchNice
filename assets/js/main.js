@@ -230,7 +230,7 @@ function drawGameScreen() {
     startMovingWalker();
     displayItemToChuck();
 	displayPlayer();
-    if(gameLevelNumber === 5){
+    if(gameLevelNumber === 5 || gameLevelNumber === 4){
         movingWalker.visible = true;
     }
 }
@@ -957,9 +957,9 @@ function randStartTarget()
 	var rand;
 	rand = Math.floor(Math.random()* 500);
 	console.log(rand);
-	if(rand < 50)
+	if(rand < 230)
 	{
-		rand += 50;
+		rand += 170;
 	}
 		grandma.y = rand;
 	
