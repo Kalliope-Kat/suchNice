@@ -23,7 +23,7 @@ var mouseX, mouseY, mousePositionText;
 
 var powerText, angleText, userAngle, userPower;
 
-var walk, blocks, blockArray, spriteX, spriteY, powerUpX, powerUpY, movingWalkerX, movingWalkerY, direction, walkerDirection;
+var walk, blocks, blockArray, spriteX, spriteY, powerUpX, powerUpY, movingWalkerX, movingWalkerY, direction, walkerDirection, grandma, grandmaTarget, flyer, flyerTarget;
 
 var itemToChuck, powerUp, cupCake, giantCupcake, gingerBread, powerUpSpeed, walker, movingWalker, itemSpeedFactor;
 
@@ -202,9 +202,10 @@ function drawGameScreen() {
         drawWalker();
     }
 
-    grumpyCat.x = 590;
-    grumpyCat.y = 410;
-    stage.addChild(grumpyCat);
+    grandma.x = 630;
+    grandma.y = 410;
+	randStartTarget();
+    stage.addChild(grandma);
     
     easterHit.x = 0;
     easterHit.y = 5;
@@ -289,7 +290,8 @@ fileManifest = [
                 {src:"audio/splat.wav", id:"splat"},
                 {src:"audio/launch.wav", id:"launch"},
                 {src:"audio/GeorgeStreet.mp3", id:"georgeStreet"},
-
+				{src:"img/grandma.png", id:"grandma"},
+				{src:"img/oldFlyer.png", id:"flyer"},
 
     
             ];
@@ -351,30 +353,23 @@ function loadComplete(evt) {
 	containShot = new createjs.Container();
 	containShot.addChild(refPoint, aimer);
 
-    // var blockSheet = new createjs.SpriteSheet({
-    //     images: [queue.getResult("mySprites")],
-    //     frames: [[0,0,32,32,0,16,16],[32,0,32,32,0,16,16],[64,0,32,32,0,16,16],[96,0,32,32,0,16,16],[128,0,32,32,0,16,16]]
-    //     });
-
-    // blocks = new createjs.Sprite(blockSheet);
-
-    // var walkSheet = new createjs.SpriteSheet({
-    //     images: [queue.getResult("mySprites")],
-    //     frames: [[160,0,19,49,0,10.05,48.6],[179,0,34,44,0,17.05,43.6],[213,0,22,46,0,9.05,45.6],[235,0,17,49,0,8.05,48.6],[0,49,25,49,0,10.05,48.6],[25,49,31,46,0,14.05,45.6],[56,49,33,44,0,16.05,43.6],[89,49,30,44,0,17.05,43.6],[119,49,28,46,0,17.05,45.6],[147,49,19,49,0,10.05,48.6],[166,49,23,49,0,14.05,48.6],[189,49,31,46,0,16.05,45.6],[220,49,34,44,0,17.05,43.6],[0,98,19,49,0,9.05,48.6],[19,98,34,44,0,17.05,43.6],[53,98,22,46,0,13.05,45.6],[75,98,17,49,0,9.05,48.6],[92,98,25,49,0,15.05,48.6],[117,98,31,46,0,17.05,45.6],[148,98,33,44,0,17.05,43.6],[181,98,30,44,0,13.05,43.6],[211,98,28,46,0,11.05,45.6],[0,147,19,49,0,9.05,48.6],[19,147,23,49,0,9.05,48.6],[42,147,31,46,0,15.05,45.6],[73,147,34,44,0,17.05,43.6]],
-    //     animations: {
-    //         standRight: [0, 0, "standRight"],
-    //         walkRight: [1, 12, "walkRight", 0.5],
-    //         standLeft: [13, 13, "standLeft"],
-    //         walkLeft: [14, 25, "walkLeft", 0.5]
-    //         }     
-    //     });
-    
-    // walk = new createjs.Sprite(walkSheet);
+    var grandmaTarget = new createjs.SpriteSheet({
+        images: [queue.getResult("flyer")],
+        frames: [[0,0,140,254,0,56.85,145.75],[0,0,140,254,0,56.85,145.75],[0,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[140,0,140,254,0,56.85,145.75],[280,0,140,254,0,56.85,145.75],[280,0,140,254,0,56.85,145.75],[280,0,140,254,0,56.85,145.75],[280,0,140,254,0,56.85,145.75],[280,0,140,254,0,56.85,145.75],[420,0,140,254,0,56.85,145.75],[420,0,140,254,0,56.85,145.75],[420,0,140,254,0,56.85,145.75],[420,0,140,254,0,56.85,145.75],[420,0,140,254,0,56.85,145.75],[560,0,140,254,0,56.85,145.75],[700,0,140,254,0,56.85,145.75],[700,0,140,254,0,56.85,145.75],[700,0,140,254,0,56.85,145.75],[700,0,140,254,0,56.85,145.75],[840,0,140,252,0,56.85,144.75]],
+        animations: {
+            standRight: [0, 0, "standRight"],
+            idleRight: [1, 24, "idleRight", 0.5]
+            }     
+        });
+		
+	grandma = new createjs.Sprite(grandmaTarget);
+	
+	grandma.gotoAndPlay("idleRight");
 
     handleButtonClick();
     initMouseCords();
     spriteX = 50;
-    spriteY = 450;
+    spriteY = 400;
     // mousePositionText = new createjs.Text("Mouse X: " +mouseX + "  Mouse Y:" + mouseY, "15px Arial", "#253742");
     scoreText = new createjs.Text("Score: "+ score, "19px Arial Bold", "#253742"); 
     itemsText = new createjs.Text("Ammo: " + itemsToThrow, "19px Arial Bold", "#253742");
@@ -418,13 +413,13 @@ var container;
 function displayPlayer()
 {
 	player.x = 40;
-	player.y = 500;
+	player.y = 460;
 	stage.addChild(player);
 	
-	aimer.x = 80;
-	aimer.y = 520;
-	aimer.regX = 72;
-	aimer.regY = 80;
+	aimer.x = 95;
+	aimer.y = 475;
+	aimer.regX = 80;
+	aimer.regY = 68;
 	stage.addChild(aimer);
 	
 }
@@ -582,15 +577,15 @@ function handleMouseMove(event)
 		
 		if(userAngle <= 90)
 		{
-			aimer.setTransform(80,520,1,1,throwAngle,0,0,72,80);
+			aimer.setTransform(95,475,1,1,throwAngle,0,0,80,68);
 		}
 		else if(userAngle >90 && userAngle < 270)
 		{
-			aimer.setTransform(110,520,1,-1,throwAngle,0,0,72,80);
+			aimer.setTransform(115,475,1,-1,throwAngle,0,0,80,68);
 		}
 		else if(userAngle > 270 && userAngle <= 360)
 		{
-			aimer.setTransform(80,520,1,1,throwAngle,0,0,72,80);
+			aimer.setTransform(95,475,1,1,throwAngle,0,0,80,68);
 		}
 		
 		powerText.x = mouseX + 5;
@@ -813,7 +808,7 @@ function updateItemTossedMovement() {
 
 function checkForCollision() {
     var powerUpDetected = ndgmr.checkPixelCollision(powerUp, itemToChuck);
-    var collision = ndgmr.checkPixelCollision(grumpyCat,itemToChuck);
+    var collision = ndgmr.checkPixelCollision(grandma,itemToChuck);
     var easterCollision = ndgmr.checkRectCollision(easterHit,itemToChuck);
     var walkerCollision = ndgmr.checkPixelCollision(walker, itemToChuck);
     var movingWalkerCollision = ndgmr.checkPixelCollision(movingWalker, itemToChuck);
@@ -824,7 +819,7 @@ function checkForCollision() {
         displayItemToChuck();
         createjs.Sound.play('splat');
         spriteX = 50;
-        spriteY = 450;
+        spriteY = 400;
         gameState = IN_GAME;
     }
 
@@ -833,7 +828,7 @@ function checkForCollision() {
         displayItemToChuck();
         createjs.Sound.play('splat');
         spriteX = 50;
-        spriteY = 450;
+        spriteY = 400;
         gameState = IN_GAME;
     }
 
@@ -843,7 +838,7 @@ function checkForCollision() {
             createjs.Sound.play('splat');
             itemsToThrow += 2;
             spriteX = 50;
-            spriteY = 450;
+            spriteY = 400;
             displayItemToChuck();
             gameState = IN_GAME;
             score++;
@@ -853,7 +848,7 @@ function checkForCollision() {
     }
     if( collision ){
             spriteX = 50;
-            spriteY = 450;
+            spriteY = 400;
             displayItemToChuck();
             gameState = IN_GAME;
             createjs.Sound.play('splat');
@@ -864,12 +859,12 @@ function checkForCollision() {
     if(easterCollision){
         easterMode = true;
         spriteX = 50;
-        spriteY = 450;
+        spriteY = 400;
         stage.addChild(easterBackdrop);
 		stage.setChildIndex(easterBackdrop,1);
-        grumpyCat.x = 590;
-        grumpyCat.y = 410;
-        stage.addChild(grumpyCat);
+        grandmaTarget.x = 630;
+        grandmaTarget.y = 410;
+        stage.addChild(grandmaTarget);
         stage.removeChild(powerUp);
         startPowerUp();
         drawAmmoBar();
@@ -879,14 +874,14 @@ function checkForCollision() {
          if ( itemToChuck.y + 45 >= canvas.height ) {
             createjs.Sound.play('splat');
             spriteX = 50;
-            spriteY = 450;
+            spriteY = 400;
             displayItemToChuck();
             gameState = IN_GAME;
          }
          if ( itemToChuck.x + 50 >= canvas.width || itemToChuck.x < 0){
             createjs.Sound.play('splat');
             spriteX = 50;
-            spriteY = 450;
+            spriteY = 400;
             displayItemToChuck();
             gameState = IN_GAME;
            } 
@@ -929,6 +924,18 @@ function moveMovingWalker() {
     movingWalker.y = movingWalkerY;
 }
 
+function randStartTarget()
+{
+	var rand;
+	rand = Math.floor(Math.random()* 500);
+	console.log(rand);
+	if(rand < 50)
+	{
+		rand += 50;
+	}
+		grandma.y = rand;
+	
+}
 
 function resetGame() {
     score = 0;
