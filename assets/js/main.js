@@ -12,7 +12,7 @@ var itemsToThrow, numberOfHits;
 
 var canvas, stage, queue, context;
 var gameState;
-var startButton, instructionsButton, restartButton, creditsButton;
+var startButton, instructionsButton, restartButton, creditsButton, creditsScreen;
 var titleScreen, instructionsScreen, winScreen, button, backDrop1, grumpyCat, easterHit, easterBackdrop;
 var gameLevelNumber;
 var gameOver, score, scoreText;
@@ -55,7 +55,7 @@ function openCanvas() {
 }
 
 function drawCreditsScreen() {
-    stage.removeChild(gameOverScreen);
+    //stage.removeAllChildren();
     creditsScreen.x = 0;
     creditsScreen.y = 0;
     
@@ -349,8 +349,7 @@ function handleButtonClick() {
             stage.removeChild(walker);
         });
     
-    creditsButton.addEventListener("click", function(event){
-        alert("credits clicked");
+    creditsButton.addEventListener("click", function (event){
         drawCreditsScreen();
     });
 }
