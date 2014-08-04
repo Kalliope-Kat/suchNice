@@ -25,7 +25,7 @@ var powerText, angleText, userAngle, userPower;
 
 var walk, blocks, blockArray, spriteX, spriteY, powerUpX, powerUpY, movingWalkerX, movingWalkerY, direction, walkerDirection;
 
-var itemToChuck, powerUp, cupCake, gingerBread, powerUpSpeed, walker, movingWalker, itemSpeedFactor;
+var itemToChuck, powerUp, cupCake, giantCupcake, gingerBread, powerUpSpeed, walker, movingWalker, itemSpeedFactor;
 
 var walkingDirection;
 
@@ -33,7 +33,7 @@ var splat, isMuted;
 
 var gameOver, timeLimit = 120;
 
-var jamieMode, paused, ammoBar, ammoBarWidth;
+var jamieMode, easterMode, paused, ammoBar, ammoBarWidth;
 
 var score;//High score persistance if time available 
 
@@ -185,9 +185,9 @@ function drawInstructionsScreen() {
 
     stage.addChild(instructionsScreen);
 //    stage.addChild(text);
-    stage.addChild(text2);
-    stage.addChild(text3);
-    stage.addChild(text4);
+//    stage.addChild(text2);
+//    stage.addChild(text3);
+//    stage.addChild(text4);
     stage.addChild(startButton);
 }
 
@@ -276,7 +276,8 @@ fileManifest = [
                 {src:"img/sprites.png", id:"mySprites"},
                 {src:"img/gameBackdrop.png", id:"backDrop1"},
                 {src:"img/grumpyCat3.png", id:"grumpyCat"},
-                {src:"img/tempCupCake.png", id:"cupCake"},
+                {src:"img/cupcake.png", id:"cupCake"},
+                {src:"img/giantCupcake.png", id:"giantCupcake"},
                 {src:"img/win_revised.png", id:"winScreen"},
                 {src:"img/GingerbreadMan.png", id:"gingerBread"},
                 {src:"img/easterHit.png", id:"easterHit"},
@@ -337,6 +338,7 @@ function loadComplete(evt) {
     backDrop1 = new createjs.Bitmap(queue.getResult("backDrop1"));
     grumpyCat = new createjs.Bitmap(queue.getResult("grumpyCat"));
     cupCake = new createjs.Bitmap(queue.getResult("cupCake"));
+    giantCupcake = new createjs.Bitmap(queue.getResult("giantCupcake"));
     gingerBread = new createjs.Bitmap(queue.getResult("gingerBread"));
     winScreen = new createjs.Bitmap(queue.getResult("winScreen"));
     easterHit = new createjs.Bitmap(queue.getResult("easterHit"));
@@ -440,6 +442,10 @@ function selectRandomItem() {
     var rand = Math.floor(Math.random()* 10);
     if(rand < 5){
         itemToChuck = cupCake;
+        if(easterMode)
+        {
+            itemToChuck = giantCupcake;
+        }
     }
     else if(rand > 5){
         itemToChuck = gingerBread;
@@ -613,6 +619,7 @@ function init() {
     loadFiles();
     gameOver = false;
     jamieMode = false;
+    easterMode = false;
     //walkingDirection = "walkRight";
     
 
@@ -676,6 +683,7 @@ function handleKeyUp(event) {
                 jamieMode = true;
                 //var storeItemCount = itemsToThrow;
                 itemsToThrow = 1000000;
+    
             }
             upDateAmmoBar();
             break;
@@ -854,6 +862,7 @@ function checkForCollision() {
 
     }
     if(easterCollision){
+        easterMode = true;
         spriteX = 50;
         spriteY = 450;
         stage.addChild(easterBackdrop);
@@ -931,6 +940,8 @@ function resetGame() {
 
 
 function goToNextLevel() {
+    jamieMode = false;
+    easterMode = false;
     numberOfHits = 0;
     gameLevelNumber++;
     powerUpSpeed += 2;
