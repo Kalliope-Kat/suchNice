@@ -12,7 +12,7 @@ var itemsToThrow, numberOfHits;
 
 var canvas, stage, queue, context;
 var gameState;
-var startButton, instructionsButton, restartButton;
+var startButton, instructionsButton, restartButton, creditsButton;
 var titleScreen, instructionsScreen, winScreen, button, backDrop1, grumpyCat, easterHit, easterBackdrop;
 var gameLevelNumber;
 var gameOver, score, scoreText;
@@ -52,6 +52,18 @@ function openCanvas() {
     context = canvas.getContext("2d");
     stage = new createjs.Stage(canvas);
 
+}
+
+function drawCreditsScreen() {
+    stage.removeChild(gameOverScreen);
+    creditsScreen.x = 0;
+    creditsScreen.y = 0;
+    
+    restartButton.x = 500;
+    restartButton.y = 500;
+    
+    stage.addChild(creditsScreen);
+    stage.addChild(restartButton);
 }
 
 function drawTitleScreen() {
@@ -240,12 +252,15 @@ function drawGameOverScreen() {
 
     restartButton.x = 500;
     restartButton.y = 500;
-
+    
+    creditsButton.x = 600;
+    creditsButton.y = 500;
 
     stage.addChild(gameOverScreen);
 //    stage.addChild(text);
     stage.addChild(finalScoreText);
     stage.addChild(restartButton);
+    stage.addChild(creditsButton);
 }
 
 function drawWinScreen() {
@@ -260,9 +275,13 @@ function drawWinScreen() {
 
     restartButton.x = 500;
     restartButton.y = 500;
+    
+    creditsButton.x = 600;
+    creditsButton.y = 500;
 
     stage.addChild(winScreen);
     stage.addChild(finalScoreText);
+    stage.addChild(creditsButton);
     stage.addChild(restartButton);
 }
 
@@ -272,8 +291,10 @@ fileManifest = [
                 {src:"img/startButton.jpg", id:"startButton"},
                 {src:"img/instructionsButton.jpg", id:"instructionsButton"},
                 {src:"img/restartButton.jpg", id:"restartButton"},
+                {src:"img/creditsButton.jpg", id:"creditsButton"},
                 {src:"img/gameScreen.jpg", id:"gameScreen"},
                 {src:"img/gameOver_revised.png", id:'gameOverScreen'},
+                {src:"img/credits.png", id:'creditsScreen'},
                 {src:"img/sprites.png", id:"mySprites"},
                 {src:"img/gameBackdrop.png", id:"backDrop1"},
                 {src:"img/grumpyCat3.png", id:"grumpyCat"},
@@ -327,6 +348,11 @@ function handleButtonClick() {
             powerUpSpeed = 6;
             stage.removeChild(walker);
         });
+    
+    creditsButton.addEventListener("click", function(event){
+        alert("credits clicked");
+        drawCreditsScreen();
+    });
 }
 
 function loadComplete(evt) {
@@ -335,8 +361,10 @@ function loadComplete(evt) {
     startButton = new createjs.Bitmap(queue.getResult("startButton"));
     instructionsButton = new createjs.Bitmap(queue.getResult("instructionsButton"));
     restartButton = new createjs.Bitmap(queue.getResult("restartButton"));
+    creditsButton = new createjs.Bitmap(queue.getResult("creditsButton"));
     gameScreen = new createjs.Bitmap(queue.getResult("gameScreen"));
     gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
+    creditsScreen = new createjs.Bitmap(queue.getResult("creditsScreen"));
     backDrop1 = new createjs.Bitmap(queue.getResult("backDrop1"));
     grumpyCat = new createjs.Bitmap(queue.getResult("grumpyCat"));
     cupCake = new createjs.Bitmap(queue.getResult("cupCake"));
